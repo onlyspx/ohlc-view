@@ -79,7 +79,7 @@ export default function Home() {
                       
                       return (
                         <tr key={key} className={`hover:bg-gray-50 ${rowClass}`} style={{backgroundColor: value > currentPrice ? '#fef2f2' : value < currentPrice ? '#f0fdf4' : 'white'}}>
-                          <td className="px-4 py-3 text-sm text-gray-700 font-medium">{label}</td>
+                          <td className="px-4 py-3 text-sm font-medium" style={{color: value > currentPrice ? '#dc2626' : value < currentPrice ? '#16a34a' : '#111827'}}>{label}</td>
                           <td className={`px-4 py-3 text-sm font-bold ${valueColor}`} style={{color: value > currentPrice ? '#dc2626' : value < currentPrice ? '#16a34a' : '#111827'}}>
                             {value === null ? 'N/A' : `$${value.toLocaleString()}`}
                           </td>
