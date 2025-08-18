@@ -34,37 +34,65 @@ export default function Home() {
           </div>
         )}
 
-        {/* Technical Indicators */}
+        {/* Technical Indicators Table */}
         {data.length > 0 && (
           <div className="mb-6">
             <h2 className="text-xl font-semibold text-white mb-4">Technical Indicators</h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3">
-              {(() => {
-                const indicators = calculateAllIndicators(data);
-                const currentPrice = data[0]?.close || 0;
-                
-                return [
-                  { key: 'sma5', label: '5D SMA', value: indicators.sma5 },
-                  { key: 'ema8', label: '8D EMA', value: indicators.ema8 },
-                  { key: 'sma10', label: '10D SMA', value: indicators.sma10 },
-                  { key: 'sma20', label: '20D SMA', value: indicators.sma20 },
-                  { key: 'ema21', label: '21D EMA', value: indicators.ema21 },
-                  { key: 'sma50', label: '50D SMA', value: indicators.sma50 },
-                  { key: 'sma100', label: '100D SMA', value: indicators.sma100 },
-                  { key: 'sma200', label: '200D SMA', value: indicators.sma200 }
-                ].map(({ key, label, value }) => (
-                  <div key={key} className="bg-gray-800 p-3 rounded-lg">
-                    <h3 className="text-gray-400 text-xs font-medium mb-1">{label}</h3>
-                    <p className={`text-lg font-bold ${
-                      value === null ? 'text-gray-500' :
-                      value > currentPrice ? 'text-green-400' :
-                      value < currentPrice ? 'text-red-400' : 'text-white'
-                    }`}>
-                      {value === null ? 'N/A' : `$${value.toLocaleString()}`}
-                    </p>
-                  </div>
-                ));
-              })()}
+            <div className="bg-white rounded-lg overflow-hidden shadow-lg">
+              <table className="w-full">
+                <thead className="bg-gray-100">
+                  <tr>
+                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Indicator</th>
+                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Value</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200">
+                  {(() => {
+                    const indicators = calculateAllIndicators(data);
+                    const currentPrice = data[0]?.close || 0;
+                    
+                    // Define indicators in order (shortest to longest period)
+                    const indicatorList = [
+                      { key: 'sma5', label: '5D SMA', value: indicators.sma5 },
+                      { key: 'ema8', label: '8D EMA', value: indicators.ema8 },
+                      { key: 'sma10', label: '10D SMA', value: indicators.sma10 },
+                      { key: 'sma20', label: '20D SMA', value: indicators.sma20 },
+                      { key: 'ema21', label: '21D EMA', value: indicators.ema21 },
+                      { key: 'sma50', label: '50D SMA', value: indicators.sma50 },
+                      { key: 'sma100', label: '100D SMA', value: indicators.sma100 },
+                      { key: 'sma200', label: '200D SMA', value: indicators.sma200 }
+                    ];
+                    
+                    return indicatorList.map(({ key, label, value }) => {
+                      let rowClass = 'bg-white';
+                      let valueColor = 'text-gray-900';
+                      
+                      if (value !== null) {
+                        if (value > currentPrice) {
+                          rowClass = 'bg-red-50';
+                          valueColor = 'text-red-600';
+                        } else if (value < currentPrice) {
+                          rowClass = 'bg-green-50';
+                          valueColor = 'text-green-600';
+                        }
+                      }
+                      
+                      return (
+                        <tr key={key} className={`hover:bg-gray-50 ${rowClass}`}>
+                          <td className="px-4 py-3 text-sm text-gray-700 font-medium">{label}</td>
+                          <td className={`px-4 py-3 text-sm font-bold ${valueColor}`}>
+                            {value === null ? 'N/A' : `$${value.toLocaleString()}`}
+                          </td>
+                        </tr>
+                      );
+                    });
+                  })()}
+                </tbody>
+              </table>
+            </div>
+            <div className="mt-2 text-xs text-gray-400">
+              Current Price: <span className="text-white font-medium">${data[0]?.close?.toLocaleString()}</span>
+              <span className="ml-4 text-gray-400">• <span className="text-red-600">Red</span> = Above • <span className="text-green-600">Green</span> = Below</span>
             </div>
           </div>
         )}
