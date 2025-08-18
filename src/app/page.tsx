@@ -9,14 +9,14 @@ export default function Home() {
   const { data, loading, error, lastUpdated } = useSPXData();
 
   return (
-    <main className="min-h-screen bg-gray-950 text-white">
+    <main className="min-h-screen bg-white text-gray-900">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-white mb-2">
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">
             S&P 500 (SPX) Daily Data
           </h1>
-          <p className="text-gray-400 text-lg">
+          <p className="text-gray-600 text-lg">
             Historical OHLC data with technical indicators
           </p>
           {lastUpdated && (
@@ -37,13 +37,13 @@ export default function Home() {
         {/* Technical Indicators Table */}
         {data.length > 0 && (
           <div className="mb-6">
-            <h2 className="text-xl font-semibold text-white mb-4">Technical Indicators</h2>
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">Technical Indicators</h2>
             <div className="bg-white rounded-lg overflow-hidden shadow-lg" style={{backgroundColor: 'white'}}>
               <table className="w-full">
-                <thead className="bg-gray-100">
+                <thead className="bg-gray-200">
                   <tr>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Indicator</th>
-                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Value</th>
+                    <th className="px-4 py-3 text-left text-sm font-bold text-black">Indicator</th>
+                    <th className="px-4 py-3 text-left text-sm font-bold text-black">Value</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
@@ -78,9 +78,9 @@ export default function Home() {
                       }
                       
                       return (
-                        <tr key={key} className={`hover:bg-gray-50 ${rowClass}`} style={{backgroundColor: value > currentPrice ? '#fef2f2' : value < currentPrice ? '#f0fdf4' : 'white'}}>
-                          <td className="px-4 py-3 text-sm font-medium" style={{color: value > currentPrice ? '#dc2626' : value < currentPrice ? '#16a34a' : '#111827'}}>{label}</td>
-                          <td className={`px-4 py-3 text-sm font-bold ${valueColor}`} style={{color: value > currentPrice ? '#dc2626' : value < currentPrice ? '#16a34a' : '#111827'}}>
+                        <tr key={key} className={`hover:bg-gray-50 ${rowClass}`} style={{backgroundColor: value !== null && value > currentPrice ? '#fef2f2' : value !== null && value < currentPrice ? '#f0fdf4' : 'white'}}>
+                          <td className="px-4 py-3 text-sm font-medium" style={{color: value !== null && value > currentPrice ? '#dc2626' : value !== null && value < currentPrice ? '#16a34a' : '#111827'}}>{label}</td>
+                          <td className={`px-4 py-3 text-sm font-bold ${valueColor}`} style={{color: value !== null && value > currentPrice ? '#dc2626' : value !== null && value < currentPrice ? '#16a34a' : '#111827'}}>
                             {value === null ? 'N/A' : `$${value.toLocaleString()}`}
                           </td>
                         </tr>
@@ -90,9 +90,9 @@ export default function Home() {
                 </tbody>
               </table>
             </div>
-            <div className="mt-2 text-xs text-gray-400">
-              Current Price: <span className="text-white font-medium">${data[0]?.close?.toLocaleString()}</span>
-              <span className="ml-4 text-gray-400">• <span className="text-red-600">Red</span> = Above • <span className="text-green-600">Green</span> = Below</span>
+            <div className="mt-2 text-xs text-gray-600">
+              Current Price: <span className="text-gray-900 font-medium">${data[0]?.close?.toLocaleString()}</span>
+              <span className="ml-4 text-gray-600">• <span className="text-red-600">Red</span> = Above • <span className="text-green-600">Green</span> = Below</span>
             </div>
           </div>
         )}
