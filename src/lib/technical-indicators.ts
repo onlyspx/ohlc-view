@@ -13,16 +13,20 @@ export function calculateSMA(data: SPXData[], period: number): number | null {
 export function calculateEMA(data: SPXData[], period: number): number | null {
   if (data.length < period) return null;
   
-  // Start with SMA for the first period
-  const sma = calculateSMA(data, period);
-  if (sma === null) return null;
+  // Sort data chronologically (oldest first) for proper EMA calculation
+  const chronologicalData = [...data].sort((a, b) => 
+    new Date(a.date).getTime() - new Date(b.date).getTime()
+  );
+  
+  // Calculate initial SMA from the first 'period' days
+  const initialSMA = chronologicalData.slice(0, period).reduce((sum, item) => sum + item.close, 0) / period;
   
   const multiplier = 2 / (period + 1);
-  let ema = sma;
+  let ema = initialSMA;
   
-  // Calculate EMA for remaining data points
-  for (let i = period; i < data.length; i++) {
-    ema = (data[i].close * multiplier) + (ema * (1 - multiplier));
+  // Calculate EMA for remaining data points (starting from period + 1)
+  for (let i = period; i < chronologicalData.length; i++) {
+    ema = (chronologicalData[i].close * multiplier) + (ema * (1 - multiplier));
   }
   
   return Math.round(ema * 100) / 100;
