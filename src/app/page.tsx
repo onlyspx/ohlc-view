@@ -70,6 +70,32 @@ export default function Home() {
           </div>
         )}
 
+        {/* Current Price Display */}
+        {data.length > 0 && (
+          <div className="mb-6 p-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900 mb-1">
+                  {symbol} Current Price
+                </h2>
+                <p className="text-gray-600">
+                  {format(new Date(data[0]?.date || ''), 'EEEE, MMMM dd, yyyy')}
+                </p>
+              </div>
+              <div className="text-right">
+                <div className="text-4xl font-bold text-gray-900">
+                  ${data[0]?.close?.toLocaleString()}
+                </div>
+                {data[0]?.change && (
+                  <div className={`text-lg font-semibold ${data[0].change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                    {data[0].change >= 0 ? '+' : ''}{data[0].change.toFixed(2)} ({data[0].changePercent?.toFixed(2)}%)
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Technical Indicators Table */}
         {data.length > 0 && (
           <div className="mb-6">
@@ -129,8 +155,7 @@ export default function Home() {
               </table>
             </div>
             <div className="mt-2 text-xs text-gray-600">
-              Current Price: <span className="text-gray-900 font-medium">${data[0]?.close?.toLocaleString()}</span>
-              <span className="ml-4 text-gray-600">• <span className="text-red-600">Red</span> = Above • <span className="text-green-600">Green</span> = Below</span>
+              <span className="text-gray-600">• <span className="text-red-600">Red</span> = Above • <span className="text-green-600">Green</span> = Below</span>
             </div>
           </div>
         )}

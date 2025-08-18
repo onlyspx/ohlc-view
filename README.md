@@ -52,7 +52,7 @@ This application uses the Yahoo Finance API to fetch SPX (^GSPC) data with intel
 1. Clone the repository:
 ```bash
 git clone <your-repo-url>
-cd onlyspx
+cd ohlc-view
 ```
 
 2. Install dependencies:
