@@ -1,13 +1,14 @@
 import { SPXData } from '@/types/spx';
 
-export async function fetchFromYahooFinance(): Promise<SPXData[]> {
+// Fetch stock data from Yahoo Finance for any symbol
+export async function fetchStockData(symbol: string): Promise<SPXData[]> {
   // Calculate date range (3 years of data)
   const endDate = new Date();
   const startDate = new Date();
   startDate.setFullYear(startDate.getFullYear() - 3);
 
-  // Yahoo Finance API endpoint for SPX (^GSPC)
-  const url = `https://query1.finance.yahoo.com/v8/finance/chart/%5EGSPC?period1=${Math.floor(startDate.getTime() / 1000)}&period2=${Math.floor(endDate.getTime() / 1000)}&interval=1d`;
+  // Yahoo Finance API endpoint for any symbol
+  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?period1=${Math.floor(startDate.getTime() / 1000)}&period2=${Math.floor(endDate.getTime() / 1000)}&interval=1d`;
 
   const response = await fetch(url);
   
@@ -56,7 +57,7 @@ export async function fetchFromYahooFinance(): Promise<SPXData[]> {
   rawData.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
   // Now calculate changes using the properly sorted data
-  const spxData: SPXData[] = rawData.map((row, index) => {
+  const stockData: SPXData[] = rawData.map((row, index) => {
     const prevClose = index > 0 ? rawData[index - 1].close : row.close;
     const change = row.close - prevClose;
     const changePercent = prevClose !== 0 ? (change / prevClose) * 100 : 0;
@@ -69,7 +70,12 @@ export async function fetchFromYahooFinance(): Promise<SPXData[]> {
   });
 
   // Sort back to most recent first for display
-  spxData.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  stockData.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   
-  return spxData;
+  return stockData;
+}
+
+// Keep the original function for backward compatibility
+export async function fetchFromYahooFinance(): Promise<SPXData[]> {
+  return fetchStockData('^GSPC');
 }

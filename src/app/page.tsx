@@ -1,12 +1,21 @@
 'use client';
 
-import { useSPXData } from '@/hooks/useSPXData';
+import { useState } from 'react';
+import { useStockData } from '@/hooks/useStockData';
 import SPXTable from '@/components/SPXTable';
 import { format } from 'date-fns';
 import { calculateAllIndicators } from '@/lib/technical-indicators';
 
 export default function Home() {
-  const { data, loading, error, lastUpdated } = useSPXData();
+  const [symbol, setSymbol] = useState('SPX');
+  const { data, loading, error, lastUpdated } = useStockData(symbol);
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    const formData = new FormData(e.target as HTMLFormElement);
+    const searchSymbol = (formData.get('symbol') as string || 'SPX').toUpperCase();
+    setSymbol(searchSymbol);
+  };
 
   return (
     <main className="min-h-screen bg-white text-gray-900">
@@ -14,13 +23,33 @@ export default function Home() {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">
-            S&P 500 (SPX) Daily Data
+            Stock Technical Analysis
           </h1>
-          <p className="text-gray-600 text-lg">
-            Historical OHLC data with technical indicators
+          <p className="text-gray-600 text-lg mb-4">
+            Historical OHLC data with technical indicators for any stock
           </p>
+          
+          {/* Search Form */}
+          <form onSubmit={handleSearch} className="mb-4">
+            <div className="flex gap-2 max-w-md">
+              <input
+                type="text"
+                name="symbol"
+                placeholder="Enter stock symbol (e.g., TSLA, AAPL, SPX)"
+                defaultValue={symbol}
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+              <button
+                type="submit"
+                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              >
+                Search
+              </button>
+            </div>
+          </form>
+          
           {lastUpdated && (
-            <p className="text-gray-500 text-sm mt-2">
+            <p className="text-gray-500 text-sm">
               Last updated: {format(new Date(lastUpdated), 'MMM dd, yyyy HH:mm:ss')}
             </p>
           )}
@@ -44,7 +73,9 @@ export default function Home() {
         {/* Technical Indicators Table */}
         {data.length > 0 && (
           <div className="mb-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">Technical Indicators</h2>
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">
+              Technical Indicators for {symbol}
+            </h2>
             <div className="bg-white rounded-lg overflow-hidden shadow-lg" style={{backgroundColor: 'white'}}>
               <table className="w-full">
                 <thead className="bg-gray-200">
