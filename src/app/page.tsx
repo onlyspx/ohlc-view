@@ -10,6 +10,11 @@ export default function Home() {
   const [symbol, setSymbol] = useState('SPX');
   const { data, loading, error, lastUpdated } = useStockData(symbol);
 
+  // Debug logging
+  console.log('Current symbol:', symbol);
+  console.log('Data length:', data.length);
+  console.log('First data item:', data[0]);
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     const formData = new FormData(e.target as HTMLFormElement);
@@ -70,28 +75,20 @@ export default function Home() {
           </div>
         )}
 
-        {/* Current Price Display */}
-        {data.length > 0 && (
+                {/* Current Price Display */}
+        {data && data.length > 0 && data[0] && (
           <div className="mb-6 p-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-1">
-                  {symbol} Current Price
-                </h2>
-                <p className="text-gray-600">
-                  {format(new Date(data[0]?.date || ''), 'EEEE, MMMM dd, yyyy')}
-                </p>
-              </div>
-              <div className="text-right">
-                <div className="text-4xl font-bold text-gray-900">
-                  ${data[0]?.close?.toLocaleString()}
-                </div>
-                {data[0]?.change && (
-                  <div className={`text-lg font-semibold ${data[0].change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                    {data[0].change >= 0 ? '+' : ''}{data[0].change.toFixed(2)} ({data[0].changePercent?.toFixed(2)}%)
-                  </div>
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900">
+                {symbol} Current Price: <span className="text-4xl font-bold text-gray-900">
+                  {data[0].close ? `$${data[0].close.toLocaleString()}` : 'Loading...'}
+                </span>
+                {data[0].change !== undefined && data[0].changePercent !== undefined && (
+                  <span className={`text-lg font-semibold ml-3 ${data[0].change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                    ({data[0].change >= 0 ? '+' : ''}{data[0].change.toFixed(2)} {data[0].changePercent >= 0 ? '+' : ''}{data[0].changePercent.toFixed(2)}%)
+                  </span>
                 )}
-              </div>
+              </h2>
             </div>
           </div>
         )}
