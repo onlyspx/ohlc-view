@@ -26,11 +26,18 @@ export default function Home() {
           )}
         </div>
 
+        {/* Loading State */}
+        {loading && (
+          <div className="mb-6 flex justify-center items-center h-64">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+          </div>
+        )}
+
         {/* Error Display */}
         {error && (
-          <div className="mb-6 p-4 bg-red-900 border border-red-700 rounded-lg">
-            <h3 className="text-red-200 font-semibold mb-2">Error Loading Data</h3>
-            <p className="text-red-300">{error}</p>
+          <div className="mb-6 p-4 bg-red-100 border border-red-300 rounded-lg">
+            <h3 className="text-red-800 font-semibold mb-2">Error Loading Data</h3>
+            <p className="text-red-700">{error}</p>
           </div>
         )}
 
