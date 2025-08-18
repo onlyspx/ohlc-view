@@ -1,15 +1,12 @@
 import { NextResponse } from 'next/server';
 import { fetchFromYahooFinance } from '@/lib/yahoo-finance';
-import { storeData } from '@/lib/storage';
 
 export async function POST() {
   try {
     // Force fetch fresh data from Yahoo Finance
     const spxData = await fetchFromYahooFinance();
     
-    // Store the new data
     const lastUpdated = new Date().toISOString();
-    await storeData(spxData, lastUpdated);
 
     return NextResponse.json({
       success: true,
@@ -22,7 +19,8 @@ export async function POST() {
     return NextResponse.json(
       { 
         success: false,
-        error: 'Failed to refresh SPX data' 
+        error: 'Failed to refresh SPX data',
+        details: error instanceof Error ? error.message : 'Unknown error'
       },
       { status: 500 }
     );
