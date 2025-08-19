@@ -77,6 +77,88 @@ export function calculateADR(data: SPXData[], period: number = 20): number | nul
   return Math.round(adr * 100) / 100;
 }
 
+// Relative Strength Index (RSI) - momentum oscillator
+export function calculateRSI(data: SPXData[], period: number = 14): number | null {
+  if (data.length < period + 1) return null;
+  
+  // Sort chronologically (oldest first)
+  const chronologicalData = [...data].sort((a, b) => 
+    new Date(a.date).getTime() - new Date(b.date).getTime()
+  );
+  
+  const changes: number[] = [];
+  for (let i = 1; i < chronologicalData.length; i++) {
+    changes.push(chronologicalData[i].close - chronologicalData[i - 1].close);
+  }
+  
+  const gains = changes.map(change => change > 0 ? change : 0);
+  const losses = changes.map(change => change < 0 ? Math.abs(change) : 0);
+  
+  // Calculate average gain and loss
+  const avgGain = gains.slice(-period).reduce((sum, gain) => sum + gain, 0) / period;
+  const avgLoss = losses.slice(-period).reduce((sum, loss) => sum + loss, 0) / period;
+  
+  if (avgLoss === 0) return 100;
+  
+  const rs = avgGain / avgLoss;
+  const rsi = 100 - (100 / (1 + rs));
+  
+  return Math.round(rsi * 100) / 100;
+}
+
+// Volume Simple Moving Average
+export function calculateVolumeSMA(data: SPXData[], period: number = 20): number | null {
+  if (data.length < period) return null;
+  
+  const recentData = data.slice(0, period);
+  const volumes = recentData.map(day => day.volume || 0);
+  const avgVolume = volumes.reduce((sum, volume) => sum + volume, 0) / period;
+  
+  return Math.round(avgVolume);
+}
+
+// Pivot Points calculation using previous day's data
+export function calculatePivotPoints(data: SPXData[]): {
+  pp: number | null;
+  r1: number | null;
+  r2: number | null;
+  s1: number | null;
+  s2: number | null;
+} | null {
+  if (data.length < 2) return null;
+  
+  // Sort chronologically (oldest first) and get previous day's data
+  const chronologicalData = [...data].sort((a, b) => 
+    new Date(a.date).getTime() - new Date(b.date).getTime()
+  );
+  
+  const prevDay = chronologicalData[chronologicalData.length - 2]; // Previous day
+  const currentDay = chronologicalData[chronologicalData.length - 1]; // Current day
+  
+  if (!prevDay) return null;
+  
+  const prevHigh = prevDay.high;
+  const prevLow = prevDay.low;
+  const prevClose = prevDay.close;
+  
+  // Calculate Pivot Point
+  const pp = (prevHigh + prevLow + prevClose) / 3;
+  
+  // Calculate Support and Resistance levels
+  const r1 = (2 * pp) - prevLow;
+  const r2 = pp + (prevHigh - prevLow);
+  const s1 = (2 * pp) - prevHigh;
+  const s2 = pp - (prevHigh - prevLow);
+  
+  return {
+    pp: Math.round(pp * 100) / 100,
+    r1: Math.round(r1 * 100) / 100,
+    r2: Math.round(r2 * 100) / 100,
+    s1: Math.round(s1 * 100) / 100,
+    s2: Math.round(s2 * 100) / 100
+  };
+}
+
 // Calculate all technical indicators for the current data
 export function calculateAllIndicators(data: SPXData[]) {
   return {
@@ -89,7 +171,10 @@ export function calculateAllIndicators(data: SPXData[]) {
     sma100: calculateSMA(data, 100),
     sma200: calculateSMA(data, 200),
     atr14: calculateATR(data, 14),
-    adr20: calculateADR(data, 20)
+    adr20: calculateADR(data, 20),
+    rsi14: calculateRSI(data, 14),
+    volumeSMA20: calculateVolumeSMA(data, 20),
+    pivotPoints: calculatePivotPoints(data)
   };
 }
 

@@ -123,14 +123,16 @@ export default function Home() {
                       { key: 'sma100', label: '100D SMA', value: indicators.sma100 },
                       { key: 'sma200', label: '200D SMA', value: indicators.sma200 },
                       { key: 'atr14', label: '14D ATR', value: indicators.atr14, isVolatility: true },
-                      { key: 'adr20', label: '20D ADR', value: indicators.adr20, isVolatility: true }
+                      { key: 'adr20', label: '20D ADR', value: indicators.adr20, isVolatility: true },
+                      { key: 'rsi14', label: '14D RSI', value: indicators.rsi14, isRSI: true },
+                      { key: 'volumeSMA20', label: '20D Vol SMA', value: indicators.volumeSMA20, isVolume: true }
                     ];
                     
-                    return indicatorList.map(({ key, label, value, isVolatility }) => {
+                    return indicatorList.map(({ key, label, value, isVolatility, isRSI, isVolume }) => {
                       let rowClass = 'bg-white';
                       let valueColor = 'text-gray-900';
                       
-                      if (value !== null && !isVolatility) {
+                      if (value !== null && !isVolatility && !isRSI && !isVolume) {
                         if (value > currentPrice) {
                           rowClass = 'bg-red-50';
                           valueColor = 'text-red-600';
@@ -140,11 +142,25 @@ export default function Home() {
                         }
                       }
                       
+                      // RSI color coding
+                      if (isRSI && value !== null) {
+                        if (value >= 70) {
+                          valueColor = 'text-red-600'; // Overbought
+                        } else if (value <= 30) {
+                          valueColor = 'text-green-600'; // Oversold
+                        }
+                      }
+                      
                       return (
-                        <tr key={key} className={`hover:bg-gray-50 ${rowClass}`} style={{backgroundColor: value !== null && !isVolatility && value > currentPrice ? '#fef2f2' : value !== null && !isVolatility && value < currentPrice ? '#f0fdf4' : 'white'}}>
-                          <td className="px-4 py-3 text-sm font-medium" style={{color: value !== null && !isVolatility && value > currentPrice ? '#dc2626' : value !== null && !isVolatility && value < currentPrice ? '#16a34a' : '#111827'}}>{label}</td>
-                          <td className={`px-4 py-3 text-sm font-bold ${valueColor}`} style={{color: value !== null && !isVolatility && value > currentPrice ? '#dc2626' : value !== null && !isVolatility && value < currentPrice ? '#16a34a' : '#111827'}}>
-                            {value === null ? 'N/A' : isVolatility ? `${value.toFixed(2)} pts` : `$${value.toLocaleString()}`}
+                        <tr key={key} className={`hover:bg-gray-50 ${rowClass}`} style={{backgroundColor: value !== null && !isVolatility && !isRSI && !isVolume && value > currentPrice ? '#fef2f2' : value !== null && !isVolatility && !isRSI && !isVolume && value < currentPrice ? '#f0fdf4' : 'white'}}>
+                          <td className="px-4 py-3 text-sm font-medium" style={{color: value !== null && !isVolatility && !isRSI && !isVolume && value > currentPrice ? '#dc2626' : value !== null && !isVolatility && !isRSI && !isVolume && value < currentPrice ? '#16a34a' : '#111827'}}>{label}</td>
+                          <td className={`px-4 py-3 text-sm font-bold ${valueColor}`} style={{color: isRSI && value !== null ? (value >= 70 ? '#dc2626' : value <= 30 ? '#16a34a' : '#111827') : valueColor}}>
+                            {value === null ? 'N/A' : 
+                              isVolatility ? `${value.toFixed(2)} pts` : 
+                              isRSI ? `${value.toFixed(1)}` :
+                              isVolume ? `${(value / 1000000).toFixed(1)}M` :
+                              `$${value.toLocaleString()}`
+                            }
                           </td>
                         </tr>
                       );
@@ -155,6 +171,77 @@ export default function Home() {
             </div>
             <div className="mt-2 text-xs text-gray-600">
               <span className="text-gray-600">• <span className="text-red-600">Red</span> = Above • <span className="text-green-600">Green</span> = Below</span>
+            </div>
+          </div>
+        )}
+
+        {/* Pivot Points Table */}
+        {data.length > 0 && (() => {
+          const indicators = calculateAllIndicators(data);
+          return indicators.pivotPoints;
+        })() && (
+          <div className="mb-6">
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">
+              Pivot Points for {symbol}
+            </h2>
+            <div className="bg-white rounded-lg overflow-hidden shadow-lg" style={{backgroundColor: 'white'}}>
+              <table className="w-full">
+                <thead className="bg-gray-200">
+                  <tr>
+                    <th className="px-4 py-3 text-left text-sm font-bold text-black">Level</th>
+                    <th className="px-4 py-3 text-left text-sm font-bold text-black">Price</th>
+                    <th className="px-4 py-3 text-left text-sm font-bold text-black">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200">
+                  {(() => {
+                    const indicators = calculateAllIndicators(data);
+                    const { pp, r1, r2, s1, s2 } = indicators.pivotPoints || {};
+                    const currentPrice = data[0]?.close || 0;
+                    
+                    const pivotLevels = [
+                      { key: 'r2', label: 'Resistance 2 (R2)', value: r2, type: 'resistance' },
+                      { key: 'r1', label: 'Resistance 1 (R1)', value: r1, type: 'resistance' },
+                      { key: 'pp', label: 'Pivot Point (PP)', value: pp, type: 'pivot' },
+                      { key: 's1', label: 'Support 1 (S1)', value: s1, type: 'support' },
+                      { key: 's2', label: 'Support 2 (S2)', value: s2, type: 'support' }
+                    ];
+                    
+                    return pivotLevels.map(({ key, label, value, type }) => {
+                      let status = '';
+                      let statusColor = 'text-gray-600';
+                      
+                      if (value !== null && value !== undefined) {
+                        if (currentPrice > value) {
+                          status = 'Above';
+                          statusColor = 'text-green-600';
+                        } else if (currentPrice < value) {
+                          status = 'Below';
+                          statusColor = 'text-red-600';
+                        } else {
+                          status = 'At Level';
+                          statusColor = 'text-blue-600';
+                        }
+                      }
+                      
+                      return (
+                        <tr key={key} className="hover:bg-gray-50">
+                          <td className="px-4 py-3 text-sm font-medium text-gray-900">{label}</td>
+                          <td className="px-4 py-3 text-sm font-bold text-gray-900">
+                            {value === null || value === undefined ? 'N/A' : `$${value.toLocaleString()}`}
+                          </td>
+                          <td className={`px-4 py-3 text-sm font-medium ${statusColor}`}>
+                            {value === null || value === undefined ? 'N/A' : status}
+                          </td>
+                        </tr>
+                      );
+                    });
+                  })()}
+                </tbody>
+              </table>
+            </div>
+            <div className="mt-2 text-xs text-gray-600">
+              <span className="text-gray-600">• Pivot Points based on previous day's High, Low, Close • <span className="text-green-600">Above</span> = Bullish • <span className="text-red-600">Below</span> = Bearish</span>
             </div>
           </div>
         )}
