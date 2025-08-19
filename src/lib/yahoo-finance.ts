@@ -20,13 +20,22 @@ function convertToEasternDate(timestamp: number): string {
 
 // Fetch stock data from Yahoo Finance for any symbol
 export async function fetchStockData(symbol: string): Promise<SPXData[]> {
+  // Symbol mapping for common variations
+  const symbolMapping: { [key: string]: string } = {
+    'SPX': '^SPX',  // S&P 500 index
+    'spx': '^SPX',  // Case insensitive
+  };
+  
+  // Use mapped symbol if available, otherwise use original
+  const mappedSymbol = symbolMapping[symbol.toUpperCase()] || symbol;
+  
   // Calculate date range (3 years of data)
   const endDate = new Date();
   const startDate = new Date();
   startDate.setFullYear(startDate.getFullYear() - 3);
 
   // Yahoo Finance API endpoint for any symbol
-  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?period1=${Math.floor(startDate.getTime() / 1000)}&period2=${Math.floor(endDate.getTime() / 1000)}&interval=1d`;
+  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${mappedSymbol}?period1=${Math.floor(startDate.getTime() / 1000)}&period2=${Math.floor(endDate.getTime() / 1000)}&interval=1d`;
 
   try {
     const controller = new AbortController();
