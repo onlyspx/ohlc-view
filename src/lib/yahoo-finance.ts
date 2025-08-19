@@ -1,6 +1,23 @@
 import { SPXData } from '@/types/spx';
 import { enhanceStockDataWithTechnicalAnalysis } from './technical-indicators';
 
+// Helper function to convert UTC timestamp to US Eastern Time date
+function convertToEasternDate(timestamp: number): string {
+  const date = new Date(timestamp * 1000);
+  
+  // Convert to Eastern Time (EST/EDT)
+  const easternTime = new Date(date.toLocaleString("en-US", {
+    timeZone: "America/New_York"
+  }));
+  
+  // Format as YYYY-MM-DD
+  const year = easternTime.getFullYear();
+  const month = String(easternTime.getMonth() + 1).padStart(2, '0');
+  const day = String(easternTime.getDate()).padStart(2, '0');
+  
+  return `${year}-${month}-${day}`;
+}
+
 // Fetch stock data from Yahoo Finance for any symbol
 export async function fetchStockData(symbol: string): Promise<SPXData[]> {
   // Calculate date range (3 years of data)
@@ -52,7 +69,7 @@ export async function fetchStockData(symbol: string): Promise<SPXData[]> {
       close: number;
       volume: number;
     }> = timestamps.map((timestamp: number, index: number) => {
-      const date = new Date(timestamp * 1000).toISOString().split('T')[0];
+      const date = convertToEasternDate(timestamp);
       const open = quotes.open[index] || 0;
       const high = quotes.high[index] || 0;
       const low = quotes.low[index] || 0;

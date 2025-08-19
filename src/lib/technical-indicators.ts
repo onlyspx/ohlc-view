@@ -76,7 +76,12 @@ export function calculateGapFill(gapPoints: number, dayLow: number, dayHigh: num
 // Trading Analysis Functions
 export function getDayOfWeek(date: string): string {
   const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-  return days[new Date(date).getDay()];
+  
+  // Parse the date string and create a date object
+  const [year, month, day] = date.split('-').map(Number);
+  const dateObj = new Date(year, month - 1, day); // month is 0-indexed
+  
+  return days[dateObj.getDay()];
 }
 
 export function calculateRTHRange(high: number, low: number): number {
