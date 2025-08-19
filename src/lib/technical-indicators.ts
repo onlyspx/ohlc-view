@@ -32,6 +32,51 @@ export function calculateEMA(data: SPXData[], period: number): number | null {
   return Math.round(ema * 100) / 100;
 }
 
+// Calculate True Range for a single day
+export function calculateTrueRange(high: number, low: number, prevClose: number): number {
+  const range1 = high - low; // Current day's range
+  const range2 = Math.abs(high - prevClose); // Gap up or down
+  const range3 = Math.abs(low - prevClose); // Gap up or down
+  
+  return Math.max(range1, range2, range3);
+}
+
+// Average True Range (ATR) - measures volatility
+export function calculateATR(data: SPXData[], period: number = 14): number | null {
+  if (data.length < period + 1) return null;
+  
+  // Sort chronologically (oldest first)
+  const chronologicalData = [...data].sort((a, b) => 
+    new Date(a.date).getTime() - new Date(b.date).getTime()
+  );
+  
+  // Calculate True Range for each day
+  const trueRanges: number[] = [];
+  for (let i = 1; i < chronologicalData.length; i++) {
+    const current = chronologicalData[i];
+    const previous = chronologicalData[i - 1];
+    const tr = calculateTrueRange(current.high, current.low, previous.close);
+    trueRanges.push(tr);
+  }
+  
+  // Calculate ATR as simple average of last 'period' true ranges
+  const recentTRs = trueRanges.slice(-period);
+  const atr = recentTRs.reduce((sum, tr) => sum + tr, 0) / period;
+  
+  return Math.round(atr * 100) / 100;
+}
+
+// Average Daily Range (ADR) - average of daily ranges
+export function calculateADR(data: SPXData[], period: number = 20): number | null {
+  if (data.length < period) return null;
+  
+  const recentData = data.slice(0, period);
+  const dailyRanges = recentData.map(day => day.high - day.low);
+  const adr = dailyRanges.reduce((sum, range) => sum + range, 0) / period;
+  
+  return Math.round(adr * 100) / 100;
+}
+
 // Calculate all technical indicators for the current data
 export function calculateAllIndicators(data: SPXData[]) {
   return {
@@ -42,7 +87,9 @@ export function calculateAllIndicators(data: SPXData[]) {
     ema21: calculateEMA(data, 21),
     sma50: calculateSMA(data, 50),
     sma100: calculateSMA(data, 100),
-    sma200: calculateSMA(data, 200)
+    sma200: calculateSMA(data, 200),
+    atr14: calculateATR(data, 14),
+    adr20: calculateADR(data, 20)
   };
 }
 

@@ -121,14 +121,16 @@ export default function Home() {
                       { key: 'ema21', label: '21D EMA', value: indicators.ema21 },
                       { key: 'sma50', label: '50D SMA', value: indicators.sma50 },
                       { key: 'sma100', label: '100D SMA', value: indicators.sma100 },
-                      { key: 'sma200', label: '200D SMA', value: indicators.sma200 }
+                      { key: 'sma200', label: '200D SMA', value: indicators.sma200 },
+                      { key: 'atr14', label: '14D ATR', value: indicators.atr14, isVolatility: true },
+                      { key: 'adr20', label: '20D ADR', value: indicators.adr20, isVolatility: true }
                     ];
                     
-                    return indicatorList.map(({ key, label, value }) => {
+                    return indicatorList.map(({ key, label, value, isVolatility }) => {
                       let rowClass = 'bg-white';
                       let valueColor = 'text-gray-900';
                       
-                      if (value !== null) {
+                      if (value !== null && !isVolatility) {
                         if (value > currentPrice) {
                           rowClass = 'bg-red-50';
                           valueColor = 'text-red-600';
@@ -139,10 +141,10 @@ export default function Home() {
                       }
                       
                       return (
-                        <tr key={key} className={`hover:bg-gray-50 ${rowClass}`} style={{backgroundColor: value !== null && value > currentPrice ? '#fef2f2' : value !== null && value < currentPrice ? '#f0fdf4' : 'white'}}>
-                          <td className="px-4 py-3 text-sm font-medium" style={{color: value !== null && value > currentPrice ? '#dc2626' : value !== null && value < currentPrice ? '#16a34a' : '#111827'}}>{label}</td>
-                          <td className={`px-4 py-3 text-sm font-bold ${valueColor}`} style={{color: value !== null && value > currentPrice ? '#dc2626' : value !== null && value < currentPrice ? '#16a34a' : '#111827'}}>
-                            {value === null ? 'N/A' : `$${value.toLocaleString()}`}
+                        <tr key={key} className={`hover:bg-gray-50 ${rowClass}`} style={{backgroundColor: value !== null && !isVolatility && value > currentPrice ? '#fef2f2' : value !== null && !isVolatility && value < currentPrice ? '#f0fdf4' : 'white'}}>
+                          <td className="px-4 py-3 text-sm font-medium" style={{color: value !== null && !isVolatility && value > currentPrice ? '#dc2626' : value !== null && !isVolatility && value < currentPrice ? '#16a34a' : '#111827'}}>{label}</td>
+                          <td className={`px-4 py-3 text-sm font-bold ${valueColor}`} style={{color: value !== null && !isVolatility && value > currentPrice ? '#dc2626' : value !== null && !isVolatility && value < currentPrice ? '#16a34a' : '#111827'}}>
+                            {value === null ? 'N/A' : isVolatility ? `${value.toFixed(2)} pts` : `$${value.toLocaleString()}`}
                           </td>
                         </tr>
                       );
