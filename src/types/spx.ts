@@ -33,3 +33,47 @@ export interface SPXResponse {
   lastUpdated: string;
 }
 
+// New types for intraday data and market profile
+export interface SPXIntradayData {
+  timestamp: string;
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+  volume: number;
+  timeSlot: string;
+  date: string;
+}
+
+export interface PriceLevel {
+  price: number;
+  volume: number;
+  frequency: number;
+  timeSlots: string[];
+  isPoorHigh: boolean;
+  isPoorLow: boolean;
+  isSinglePrint: boolean;
+}
+
+export interface MarketProfile {
+  date: string;
+  pointOfControl: number;
+  valueArea: { high: number; low: number };
+  poorHighs: PriceLevel[];
+  poorLows: PriceLevel[];
+  singlePrints: PriceLevel[];
+  profileType: 'normal' | 'double' | 'trend' | 'neutral';
+  timeSlots: Array<{
+    timeSlot: string;
+    high: number;
+    low: number;
+    volume: number;
+  }>;
+}
+
+export interface SPXIntradayResponse {
+  data: SPXIntradayData[];
+  date: string;
+  lastUpdated: string;
+  recordCount: number;
+}

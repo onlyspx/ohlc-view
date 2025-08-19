@@ -1,4 +1,4 @@
-import { SPXData } from '@/types/spx';
+import { SPXData, SPXIntradayData } from '@/types/spx';
 import { enhanceStockDataWithTechnicalAnalysis } from './technical-indicators';
 
 // Helper function to convert UTC timestamp to US Eastern Time date
@@ -129,4 +129,67 @@ export async function fetchStockData(symbol: string): Promise<SPXData[]> {
 // Keep the original function for backward compatibility
 export async function fetchFromYahooFinance(): Promise<SPXData[]> {
   return fetchStockData('^GSPC');
+}
+
+// Fetch SPX intraday data (5-minute intervals) for a specific date
+export async function fetchSPXIntradayData(date: string): Promise<SPXIntradayData[]> {
+  const startTime = Math.floor(new Date(`${date}T09:30:00-05:00`).getTime() / 1000);
+  const endTime = Math.floor(new Date(`${date}T16:00:00-05:00`).getTime() / 1000);
+  
+  const url = `https://query1.finance.yahoo.com/v8/finance/chart/%5ESPX?period1=${startTime}&period2=${endTime}&interval=5m`;
+  
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+
+    const response = await fetch(url, {
+      signal: controller.signal,
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (compatible; StockApp/1.0)',
+      },
+    });
+    
+    clearTimeout(timeoutId);
+    
+    if (!response.ok) {
+      throw new Error(`Yahoo Finance API error: ${response.status} ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    
+    if (!data.chart || !data.chart.result || !data.chart.result[0]) {
+      throw new Error('Invalid data structure from Yahoo Finance API');
+    }
+
+    const result = data.chart.result[0];
+    const timestamps = result.timestamp;
+    const quotes = result.indicators.quote[0];
+
+    if (!timestamps || !quotes) {
+      throw new Error('Missing required data fields from Yahoo Finance API');
+    }
+
+    const intradayData: SPXIntradayData[] = timestamps.map((timestamp: number, index: number) => {
+      const dateTime = new Date(timestamp * 1000);
+      const timeSlot = `${String(dateTime.getHours()).padStart(2, '0')}:${String(dateTime.getMinutes()).padStart(2, '0')}`;
+      
+      return {
+        timestamp: dateTime.toISOString(),
+        open: Math.round((quotes.open[index] || 0) * 100) / 100,
+        high: Math.round((quotes.high[index] || 0) * 100) / 100,
+        low: Math.round((quotes.low[index] || 0) * 100) / 100,
+        close: Math.round((quotes.close[index] || 0) * 100) / 100,
+        volume: quotes.volume[index] || 0,
+        timeSlot,
+        date
+      };
+    });
+
+    return intradayData;
+  } catch (error) {
+    if (error instanceof Error && error.name === 'AbortError') {
+      throw new Error('Request timeout: Yahoo Finance API took too long to respond');
+    }
+    throw error;
+  }
 }

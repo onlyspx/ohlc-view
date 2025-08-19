@@ -34,6 +34,16 @@ export default function Home() {
             Historical OHLC data with technical indicators for any stock
           </p>
           
+          {/* Navigation */}
+          <div className="mb-6 flex gap-4">
+            <a
+              href="/market-profile"
+              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors"
+            >
+              📊 SPX Market Profile
+            </a>
+          </div>
+          
           {/* Search Form */}
           <form onSubmit={handleSearch} className="mb-4">
             <div className="flex gap-2 max-w-md">
