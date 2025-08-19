@@ -7,7 +7,7 @@ import { format } from 'date-fns';
 import { calculateAllIndicators } from '@/lib/technical-indicators';
 
 export default function Home() {
-  const [symbol, setSymbol] = useState('SPX');
+  const [symbol, setSymbol] = useState('SPY');
   const { data, loading, error, lastUpdated } = useStockData(symbol);
 
   // Debug logging
@@ -18,7 +18,7 @@ export default function Home() {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     const formData = new FormData(e.target as HTMLFormElement);
-    const searchSymbol = (formData.get('symbol') as string || 'SPX').toUpperCase();
+    const searchSymbol = (formData.get('symbol') as string || 'SPY').toUpperCase();
     setSymbol(searchSymbol);
   };
 
@@ -40,7 +40,7 @@ export default function Home() {
               <input
                 type="text"
                 name="symbol"
-                placeholder="Enter stock symbol (e.g., TSLA, AAPL, SPX)"
+                placeholder="Enter stock symbol (e.g., TSLA, AAPL, SPY)"
                 defaultValue={symbol}
                 className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />

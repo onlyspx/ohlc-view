@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { SPXResponse, SPXData } from '@/types/spx';
 
-export function useStockData(symbol: string = 'SPX') {
+export function useStockData(symbol: string = 'SPY') {
   const [data, setData] = useState<SPXData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -12,6 +12,9 @@ export function useStockData(symbol: string = 'SPX') {
       try {
         setLoading(true);
         setError(null);
+        // Clear previous data immediately when starting a new request
+        setData([]);
+        setLastUpdated(null);
         
         // Add timestamp to force cache refresh
         const timestamp = Date.now();
@@ -32,6 +35,9 @@ export function useStockData(symbol: string = 'SPX') {
         setLastUpdated(result.lastUpdated);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to fetch data');
+        // Clear data on error to prevent showing stale data
+        setData([]);
+        setLastUpdated(null);
       } finally {
         setLoading(false);
       }
