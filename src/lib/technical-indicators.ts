@@ -45,3 +45,106 @@ export function calculateAllIndicators(data: SPXData[]) {
     sma200: calculateSMA(data, 200)
   };
 }
+
+// Gap Analysis Functions
+export function calculateGapPoints(currentOpen: number, prevClose: number): number {
+  return Math.round((currentOpen - prevClose) * 100) / 100;
+}
+
+export function calculateGapFill(gapPoints: number, dayLow: number, dayHigh: number, prevClose: number): string {
+  if (gapPoints === 0) return "Yes"; // No gap
+  
+  if (gapPoints > 0) {
+    // Bull gap: check if price went below previous close
+    if (dayLow <= prevClose) {
+      return "Yes";
+    } else {
+      const pointsLeft = Math.round((dayLow - prevClose) * 100) / 100;
+      return `No (${pointsLeft.toFixed(2)} points left)`;
+    }
+  } else {
+    // Bear gap: check if price went above previous close
+    if (dayHigh >= prevClose) {
+      return "Yes";
+    } else {
+      const pointsLeft = Math.round((prevClose - dayHigh) * 100) / 100;
+      return `No (${pointsLeft.toFixed(2)} points left)`;
+    }
+  }
+}
+
+// Trading Analysis Functions
+export function getDayOfWeek(date: string): string {
+  const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  return days[new Date(date).getDay()];
+}
+
+export function calculateRTHRange(high: number, low: number): number {
+  return Math.round((high - low) * 100) / 100;
+}
+
+// Price Level Analysis Functions
+export function calculatePointNegativeOpen(open: number, low: number): number {
+  return Math.round((open - low) * 100) / 100;
+}
+
+export function calculatePointPositiveOpen(open: number, high: number): number {
+  return Math.round((high - open) * 100) / 100;
+}
+
+export function calculateAbovePDH(dayHigh: number, prevDayHigh: number): string {
+  if (dayHigh > prevDayHigh) {
+    const pointsUp = Math.round((dayHigh - prevDayHigh) * 100) / 100;
+    return `Yes (${pointsUp.toFixed(2)} points up)`;
+  }
+  return "No";
+}
+
+export function calculateBelowPDL(dayLow: number, prevDayLow: number): string {
+  if (dayLow < prevDayLow) {
+    const pointsDown = Math.round((prevDayLow - dayLow) * 100) / 100;
+    return `Yes (${pointsDown.toFixed(2)} points down)`;
+  }
+  return "No";
+}
+
+// Enhanced data processing function
+export function enhanceStockDataWithTechnicalAnalysis(data: SPXData[]): SPXData[] {
+  // Sort chronologically (oldest first) for proper calculations
+  const chronologicalData = [...data].sort((a, b) => 
+    new Date(a.date).getTime() - new Date(b.date).getTime()
+  );
+  
+  return chronologicalData.map((row, index) => {
+    const prevDay = index > 0 ? chronologicalData[index - 1] : null;
+    
+    // Calculate gap analysis
+    const gapPoints = prevDay ? calculateGapPoints(row.open, prevDay.close) : 0;
+    const gapFill = prevDay ? calculateGapFill(gapPoints, row.low, row.high, prevDay.close) : "Yes";
+    
+    // Calculate trading analysis
+    const dayOfWeek = getDayOfWeek(row.date);
+    const rthRange = calculateRTHRange(row.high, row.low);
+    
+    // Calculate price level analysis
+    const pointNegativeOpen = calculatePointNegativeOpen(row.open, row.low);
+    const pointPositiveOpen = calculatePointPositiveOpen(row.open, row.high);
+    const abovePDH = prevDay ? calculateAbovePDH(row.high, prevDay.high) : "No";
+    const belowPDL = prevDay ? calculateBelowPDL(row.low, prevDay.low) : "No";
+    
+    return {
+      ...row,
+      gapPoints,
+      gapFill,
+      dayOfWeek,
+      rthRange,
+      pointNegativeOpen,
+      pointPositiveOpen,
+      abovePDH,
+      belowPDL,
+      prevDayHigh: prevDay?.high,
+      prevDayLow: prevDay?.low,
+      prevDayClose: prevDay?.close
+    };
+  });
+}

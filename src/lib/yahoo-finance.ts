@@ -1,4 +1,5 @@
 import { SPXData } from '@/types/spx';
+import { enhanceStockDataWithTechnicalAnalysis } from './technical-indicators';
 
 // Fetch stock data from Yahoo Finance for any symbol
 export async function fetchStockData(symbol: string): Promise<SPXData[]> {
@@ -84,10 +85,13 @@ export async function fetchStockData(symbol: string): Promise<SPXData[]> {
       };
     });
 
-    // Sort back to most recent first for display
-    stockData.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    // Apply technical analysis calculations
+    const enhancedData = enhanceStockDataWithTechnicalAnalysis(stockData);
     
-    return stockData;
+    // Sort back to most recent first for display
+    enhancedData.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    
+    return enhancedData;
   } catch (error) {
     if (error instanceof Error && error.name === 'AbortError') {
       throw new Error('Request timeout: Yahoo Finance API took too long to respond');
