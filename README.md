@@ -184,3 +184,7 @@ MIT License - feel free to use this project for your own purposes.
 ## Support
 
 If you encounter any issues or have questions, please open an issue on GitHub.
+
+## 🚀 **Future Development**
+
+See [INTEGRATION_PLAN.md](./INTEGRATION_PLAN.md) for detailed plans to integrate hourly analysis, VIX correlation, and intraday market profile features from the market-lens project.
