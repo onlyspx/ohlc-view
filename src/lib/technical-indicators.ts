@@ -70,7 +70,12 @@ export function calculateATR(data: SPXData[], period: number = 14): number | nul
 export function calculateADR(data: SPXData[], period: number = 20): number | null {
   if (data.length < period) return null;
   
-  const recentData = data.slice(0, period);
+  // Sort chronologically (oldest first) and take the most recent 'period' days
+  const chronologicalData = [...data].sort((a, b) => 
+    new Date(a.date).getTime() - new Date(b.date).getTime()
+  );
+  
+  const recentData = chronologicalData.slice(-period); // Take last 'period' days
   const dailyRanges = recentData.map(day => day.high - day.low);
   const adr = dailyRanges.reduce((sum, range) => sum + range, 0) / period;
   
@@ -110,7 +115,12 @@ export function calculateRSI(data: SPXData[], period: number = 14): number | nul
 export function calculateVolumeSMA(data: SPXData[], period: number = 20): number | null {
   if (data.length < period) return null;
   
-  const recentData = data.slice(0, period);
+  // Sort chronologically (oldest first) and take the most recent 'period' days
+  const chronologicalData = [...data].sort((a, b) => 
+    new Date(a.date).getTime() - new Date(b.date).getTime()
+  );
+  
+  const recentData = chronologicalData.slice(-period); // Take last 'period' days
   const volumes = recentData.map(day => day.volume || 0);
   const avgVolume = volumes.reduce((sum, volume) => sum + volume, 0) / period;
   
