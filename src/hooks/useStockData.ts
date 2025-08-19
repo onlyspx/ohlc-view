@@ -13,8 +13,14 @@ export function useStockData(symbol: string = 'SPX') {
         setLoading(true);
         setError(null);
         
-        // Use the dynamic API endpoint
-        const response = await fetch(`/api/stock/${symbol}`);
+        // Add timestamp to force cache refresh
+        const timestamp = Date.now();
+        const response = await fetch(`/api/stock/${symbol}?t=${timestamp}`, {
+          headers: {
+            'Cache-Control': 'no-cache',
+            'Pragma': 'no-cache'
+          }
+        });
         
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
