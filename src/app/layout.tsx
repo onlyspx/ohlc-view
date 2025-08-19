@@ -8,8 +8,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "SPX Daily Data - S&P 500 OHLC Tracker",
-  description: "Track S&P 500 daily OHLC data with interactive filtering and statistics",
+  title:"OHLC Tracker",
+  description: "Track daily OHLC data with interactive filtering and statistics",
 };
 
 export default function RootLayout({
