@@ -3,6 +3,13 @@
 import { SPXData } from '@/types/spx';
 import { format } from 'date-fns';
 
+// Helper function to format date consistently
+function formatDate(dateString: string): string {
+  const [year, month, day] = dateString.split('-').map(Number);
+  const date = new Date(Date.UTC(year, month - 1, day));
+  return format(date, 'MMM dd');
+}
+
 interface SPXTableProps {
   data: SPXData[];
   loading: boolean;
@@ -83,7 +90,7 @@ export default function SPXTable({ data, loading }: SPXTableProps) {
                 }`}
               >
                 <td className="px-2 py-2 text-xs text-gray-900">
-                  {format(new Date(row.date), 'MMM dd')}
+                  {formatDate(row.date)}
                 </td>
                 <td className="px-2 py-2 text-xs text-gray-900">
                   {row.dayOfWeek?.substring(0, 3) || '-'}

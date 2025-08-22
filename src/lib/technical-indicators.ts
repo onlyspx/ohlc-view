@@ -219,11 +219,11 @@ export function calculateGapFill(gapPoints: number, dayLow: number, dayHigh: num
 export function getDayOfWeek(date: string): string {
   const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   
-  // Parse the date string and create a date object
+  // Parse the date string and create a date object with UTC to avoid timezone issues
   const [year, month, day] = date.split('-').map(Number);
-  const dateObj = new Date(year, month - 1, day); // month is 0-indexed
+  const dateObj = new Date(Date.UTC(year, month - 1, day)); // month is 0-indexed, use UTC
   
-  return days[dateObj.getDay()];
+  return days[dateObj.getUTCDay()];
 }
 
 export function calculateRTHRange(high: number, low: number): number {
