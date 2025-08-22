@@ -37,6 +37,12 @@ export default function Home() {
           {/* Navigation */}
           <div className="mb-6 flex gap-4">
             <a
+              href="/dashboard"
+              className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-colors"
+            >
+              📊 Technical Dashboard
+            </a>
+            <a
               href="/market-profile"
               className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors"
             >
