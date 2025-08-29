@@ -7,6 +7,7 @@ import {
   loadDashboardConfig, 
   saveDashboardConfig, 
   resetDashboardConfig,
+  getDefaultConfig,
   addMovingAverage,
   removeMovingAverage,
   toggleMovingAverage,
