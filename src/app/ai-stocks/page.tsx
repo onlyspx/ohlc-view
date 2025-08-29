@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { fetchStockData } from '@/lib/yahoo-finance';
+// Remove direct Yahoo Finance import - we'll use the API endpoint instead
 import { calculateAllIndicators } from '@/lib/technical-indicators';
 
 interface StockData {
@@ -141,7 +141,15 @@ export default function AIStocksPage() {
       const stockPromises = AI_STOCKS.map(async (stock) => {
         try {
           console.log(`Fetching data for ${stock.symbol}...`);
-          const data = await fetchStockData(stock.symbol);
+          
+          // Use the existing API endpoint instead of direct Yahoo Finance call
+          const response = await fetch(`/api/stock/${stock.symbol}`);
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+          }
+          
+          const result = await response.json();
+          const data = result.data || [];
           console.log(`${stock.symbol} data:`, data);
           
           if (!data || data.length === 0) {
