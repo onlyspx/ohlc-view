@@ -305,6 +305,9 @@ export default function AIStocksPage() {
                     Category
                   </th>
                   <th className="px-4 py-3 text-left text-sm font-bold text-gray-900 border-b">
+                    AI Relevance
+                  </th>
+                  <th className="px-4 py-3 text-left text-sm font-bold text-gray-900 border-b">
                     Price
                   </th>
                   {config.movingAverages.filter(ma => ma.enabled).map(ma => (
@@ -331,16 +334,7 @@ export default function AIStocksPage() {
                   <tr key={stock.symbol} className="hover:bg-gray-50">
                     <td className="px-4 py-3 text-sm border-r">
                       <div>
-                        <div className="flex items-center gap-2">
-                          <div className="font-semibold text-gray-900">{stock.symbol}</div>
-                          <button
-                            onClick={() => alert(stock.description)}
-                            className="text-blue-500 hover:text-blue-700 text-xs"
-                            title="Click for AI relevance info"
-                          >
-                            ℹ️
-                          </button>
-                        </div>
+                        <div className="font-semibold text-gray-900">{stock.symbol}</div>
                         <div className="text-xs text-gray-500">{stock.name}</div>
                       </div>
                     </td>
@@ -349,6 +343,11 @@ export default function AIStocksPage() {
                         <span>{CATEGORY_EMOJIS[stock.category]}</span>
                         <span className="text-gray-700">{stock.category}</span>
                       </span>
+                    </td>
+                    <td className="px-4 py-3 text-sm border-r max-w-xs">
+                      <div className="text-xs text-gray-600 leading-relaxed">
+                        {stock.description}
+                      </div>
                     </td>
                     <td className="px-4 py-3 text-sm border-r font-semibold">
                       {stock.error ? (
