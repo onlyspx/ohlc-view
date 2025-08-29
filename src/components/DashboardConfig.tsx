@@ -1,9 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { 
+import type { 
   DashboardConfig, 
-  MovingAverage, 
+  MovingAverage 
+} from '@/lib/dashboard-config';
+import { 
   loadDashboardConfig, 
   saveDashboardConfig, 
   resetDashboardConfig,
