@@ -63,13 +63,18 @@ export default function Dashboard() {
 
   const getIndicatorValue = (data: any[], indicatorKey: string): number | null => {
     if (!data || data.length === 0) return null;
-    const indicators = calculateAllIndicators(data);
-    const value = indicators[indicatorKey as keyof typeof indicators];
-    // Handle pivot points object
-    if (indicatorKey === 'pivotPoints' && typeof value === 'object') {
-      return null; // We're not showing pivot points in this dashboard
+    try {
+      const indicators = calculateAllIndicators(data);
+      const value = indicators[indicatorKey as keyof typeof indicators];
+      // Handle pivot points object
+      if (indicatorKey === 'pivotPoints' && typeof value === 'object') {
+        return null; // We're not showing pivot points in this dashboard
+      }
+      return typeof value === 'number' ? value : null;
+    } catch (error) {
+      console.error(`Error calculating indicator ${indicatorKey}:`, error);
+      return null;
     }
-    return typeof value === 'number' ? value : null;
   };
 
   const getCurrentPrice = (data: any[]) => {

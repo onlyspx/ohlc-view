@@ -32,34 +32,71 @@ export default function DashboardConfig({ config, onConfigChange, isOpen, onClos
 
   const handleAddTicker = () => {
     if (newTicker.trim()) {
-      const updatedConfig = addTicker(config, newTicker.trim());
-      onConfigChange(updatedConfig);
-      setNewTicker('');
+      try {
+        const updatedConfig = addTicker(config, newTicker.trim());
+        onConfigChange(updatedConfig);
+        setNewTicker('');
+      } catch (error) {
+        console.error('Error adding ticker:', error);
+        alert('Error adding ticker. Please try again.');
+      }
     }
   };
 
   const handleRemoveTicker = (ticker: string) => {
-    const updatedConfig = removeTicker(config, ticker);
-    onConfigChange(updatedConfig);
+    try {
+      // Prevent removing all tickers
+      if (config.tickers.filter(t => t !== ticker.toUpperCase()).length === 0) {
+        alert('Cannot remove all tickers. Please keep at least one.');
+        return;
+      }
+      
+      const updatedConfig = removeTicker(config, ticker);
+      onConfigChange(updatedConfig);
+    } catch (error) {
+      console.error('Error removing ticker:', error);
+      alert('Error removing ticker. Please try again.');
+    }
   };
 
   const handleAddMA = () => {
     const period = parseInt(newMAPeriod);
     if (period > 0) {
-      const updatedConfig = addMovingAverage(config, period, newMAType);
-      onConfigChange(updatedConfig);
-      setNewMAPeriod('');
+      try {
+        const updatedConfig = addMovingAverage(config, period, newMAType);
+        onConfigChange(updatedConfig);
+        setNewMAPeriod('');
+      } catch (error) {
+        console.error('Error adding moving average:', error);
+        alert('Error adding moving average. Please try again.');
+      }
     }
   };
 
   const handleRemoveMA = (key: string) => {
-    const updatedConfig = removeMovingAverage(config, key);
-    onConfigChange(updatedConfig);
+    try {
+      // Prevent removing all moving averages
+      if (config.movingAverages.filter(ma => ma.key !== key).length === 0) {
+        alert('Cannot remove all moving averages. Please keep at least one.');
+        return;
+      }
+      
+      const updatedConfig = removeMovingAverage(config, key);
+      onConfigChange(updatedConfig);
+    } catch (error) {
+      console.error('Error removing moving average:', error);
+      alert('Error removing moving average. Please try again.');
+    }
   };
 
   const handleToggleMA = (key: string) => {
-    const updatedConfig = toggleMovingAverage(config, key);
-    onConfigChange(updatedConfig);
+    try {
+      const updatedConfig = toggleMovingAverage(config, key);
+      onConfigChange(updatedConfig);
+    } catch (error) {
+      console.error('Error toggling moving average:', error);
+      alert('Error toggling moving average. Please try again.');
+    }
   };
 
   const handleReset = () => {

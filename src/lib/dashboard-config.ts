@@ -120,26 +120,36 @@ export function addMovingAverage(
 
 // Remove a moving average
 export function removeMovingAverage(config: DashboardConfig, key: string): DashboardConfig {
-  const updatedConfig = {
-    ...config,
-    movingAverages: config.movingAverages.filter(ma => ma.key !== key)
-  };
+  try {
+    const updatedConfig = {
+      ...config,
+      movingAverages: config.movingAverages.filter(ma => ma.key !== key)
+    };
 
-  saveDashboardConfig(updatedConfig);
-  return updatedConfig;
+    saveDashboardConfig(updatedConfig);
+    return updatedConfig;
+  } catch (error) {
+    console.error('Error removing moving average:', error);
+    throw error;
+  }
 }
 
 // Toggle moving average visibility
 export function toggleMovingAverage(config: DashboardConfig, key: string): DashboardConfig {
-  const updatedConfig = {
-    ...config,
-    movingAverages: config.movingAverages.map(ma => 
-      ma.key === key ? { ...ma, enabled: !ma.enabled } : ma
-    )
-  };
+  try {
+    const updatedConfig = {
+      ...config,
+      movingAverages: config.movingAverages.map(ma => 
+        ma.key === key ? { ...ma, enabled: !ma.enabled } : ma
+      )
+    };
 
-  saveDashboardConfig(updatedConfig);
-  return updatedConfig;
+    saveDashboardConfig(updatedConfig);
+    return updatedConfig;
+  } catch (error) {
+    console.error('Error toggling moving average:', error);
+    throw error;
+  }
 }
 
 // Add ticker to list
