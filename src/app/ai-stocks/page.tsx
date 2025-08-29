@@ -267,7 +267,19 @@ export default function AIStocksPage() {
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">🤖 AI Stocks Dashboard</h1>
           <p className="text-gray-600">Technical analysis for AI infrastructure and related stocks</p>
-          <div className="mt-4">
+          <div className="mt-4 flex gap-4">
+            <a
+              href="/"
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+            >
+              🏠 Home
+            </a>
+            <a
+              href="/dashboard"
+              className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-colors"
+            >
+              📊 Market Dashboard
+            </a>
             <button
               onClick={() => setShowConfig(true)}
               className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-colors"

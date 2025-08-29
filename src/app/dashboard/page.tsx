@@ -151,7 +151,7 @@ export default function Dashboard() {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">
-            Technical Indicators Dashboard
+            Market Dashboard
           </h1>
           <p className="text-gray-600 text-lg mb-4">
             Comprehensive view of technical indicators across major securities
@@ -170,12 +170,6 @@ export default function Dashboard() {
               className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-colors"
             >
               🤖 AI Stocks
-            </a>
-            <a
-              href="/market-profile"
-              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors"
-            >
-              📊 SPX Market Profile
             </a>
             <button
               onClick={() => setShowConfig(true)}
