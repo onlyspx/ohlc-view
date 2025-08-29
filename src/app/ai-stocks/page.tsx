@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { getStockData } from '@/lib/yahoo-finance';
+import { fetchStockData } from '@/lib/yahoo-finance';
 import { calculateAllIndicators } from '@/lib/technical-indicators';
 
 interface StockData {
@@ -140,9 +140,27 @@ export default function AIStocksPage() {
       
       const stockPromises = AI_STOCKS.map(async (stock) => {
         try {
-          const data = await getStockData(stock.symbol);
+          console.log(`Fetching data for ${stock.symbol}...`);
+          const data = await fetchStockData(stock.symbol);
+          console.log(`${stock.symbol} data:`, data);
+          
+          if (!data || data.length === 0) {
+            console.warn(`No data received for ${stock.symbol}`);
+            return {
+              symbol: stock.symbol,
+              name: stock.name,
+              category: stock.category,
+              data: [],
+              indicators: {},
+              currentPrice: 0,
+              loading: false,
+              error: 'No data available'
+            };
+          }
+          
           const indicators = calculateAllIndicators(data);
           const currentPrice = data[0]?.close || 0;
+          console.log(`${stock.symbol} current price:`, currentPrice);
           
           return {
             symbol: stock.symbol,
@@ -155,6 +173,7 @@ export default function AIStocksPage() {
             error: null
           };
         } catch (error) {
+          console.error(`Error fetching ${stock.symbol}:`, error);
           return {
             symbol: stock.symbol,
             name: stock.name,
@@ -163,7 +182,7 @@ export default function AIStocksPage() {
             indicators: {},
             currentPrice: 0,
             loading: false,
-            error: 'Failed to fetch data'
+            error: error instanceof Error ? error.message : 'Failed to fetch data'
           };
         }
       });
@@ -283,7 +302,13 @@ export default function AIStocksPage() {
                       </span>
                     </td>
                     <td className="px-4 py-3 text-sm border-r font-semibold">
-                      ${stock.currentPrice.toFixed(2)}
+                      {stock.error ? (
+                        <span className="text-red-500 text-xs">{stock.error}</span>
+                      ) : stock.currentPrice > 0 ? (
+                        `$${stock.currentPrice.toFixed(2)}`
+                      ) : (
+                        <span className="text-gray-400">Loading...</span>
+                      )}
                     </td>
                     <td className="px-4 py-3 text-sm border-r">
                       {renderIndicatorCell(getIndicatorValue(stock.indicators, 'sma5'), false, false, false, stock.currentPrice)}
