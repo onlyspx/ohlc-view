@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   DashboardConfig, 
   MovingAverage, 
@@ -27,85 +27,109 @@ export default function DashboardConfig({ config, onConfigChange, isOpen, onClos
   const [newTicker, setNewTicker] = useState('');
   const [newMAPeriod, setNewMAPeriod] = useState('');
   const [newMAType, setNewMAType] = useState<'SMA' | 'EMA' | 'WMA'>('SMA');
+  
+  // Local state for configuration changes (not applied until save)
+  const [localConfig, setLocalConfig] = useState<DashboardConfig>(config);
+  const [hasChanges, setHasChanges] = useState(false);
 
   if (!isOpen) return null;
 
+  // Update local config when prop changes
+  useEffect(() => {
+    setLocalConfig(config);
+    setHasChanges(false);
+  }, [config]);
+
   const handleAddTicker = () => {
     if (newTicker.trim()) {
-      try {
-        const updatedConfig = addTicker(config, newTicker.trim());
-        onConfigChange(updatedConfig);
+      const upperTicker = newTicker.trim().toUpperCase();
+      if (!localConfig.tickers.includes(upperTicker)) {
+        const updatedConfig = {
+          ...localConfig,
+          tickers: [...localConfig.tickers, upperTicker]
+        };
+        setLocalConfig(updatedConfig);
+        setHasChanges(true);
         setNewTicker('');
-      } catch (error) {
-        console.error('Error adding ticker:', error);
-        alert('Error adding ticker. Please try again.');
       }
     }
   };
 
-  const handleRemoveTicker = (ticker: string) => {
-    try {
-      // Prevent removing all tickers
-      if (config.tickers.filter(t => t !== ticker.toUpperCase()).length === 0) {
-        alert('Cannot remove all tickers. Please keep at least one.');
-        return;
-      }
-      
-      const updatedConfig = removeTicker(config, ticker);
-      onConfigChange(updatedConfig);
-    } catch (error) {
-      console.error('Error removing ticker:', error);
-      alert('Error removing ticker. Please try again.');
+  const handleToggleTicker = (ticker: string) => {
+    const updatedTickers = localConfig.tickers.filter(t => t !== ticker);
+    // Prevent removing all tickers
+    if (updatedTickers.length === 0) {
+      alert('Cannot remove all tickers. Please keep at least one.');
+      return;
     }
+    
+    const updatedConfig = {
+      ...localConfig,
+      tickers: updatedTickers
+    };
+    setLocalConfig(updatedConfig);
+    setHasChanges(true);
   };
 
   const handleAddMA = () => {
     const period = parseInt(newMAPeriod);
     if (period > 0) {
-      try {
-        const updatedConfig = addMovingAverage(config, period, newMAType);
-        onConfigChange(updatedConfig);
-        setNewMAPeriod('');
-      } catch (error) {
-        console.error('Error adding moving average:', error);
-        alert('Error adding moving average. Please try again.');
-      }
-    }
-  };
-
-  const handleRemoveMA = (key: string) => {
-    try {
-      // Prevent removing all moving averages
-      if (config.movingAverages.filter(ma => ma.key !== key).length === 0) {
-        alert('Cannot remove all moving averages. Please keep at least one.');
-        return;
-      }
+      const key = `${newMAType.toLowerCase()}${period}`;
+      const label = `${period}D ${newMAType}`;
       
-      const updatedConfig = removeMovingAverage(config, key);
-      onConfigChange(updatedConfig);
-    } catch (error) {
-      console.error('Error removing moving average:', error);
-      alert('Error removing moving average. Please try again.');
+      const newMA = {
+        key,
+        label,
+        period,
+        type: newMAType,
+        enabled: true
+      };
+
+      const updatedConfig = {
+        ...localConfig,
+        movingAverages: [...localConfig.movingAverages, newMA]
+      };
+      setLocalConfig(updatedConfig);
+      setHasChanges(true);
+      setNewMAPeriod('');
     }
   };
 
   const handleToggleMA = (key: string) => {
-    try {
-      const updatedConfig = toggleMovingAverage(config, key);
-      onConfigChange(updatedConfig);
-    } catch (error) {
-      console.error('Error toggling moving average:', error);
-      alert('Error toggling moving average. Please try again.');
+    const updatedMAs = localConfig.movingAverages.map(ma => 
+      ma.key === key ? { ...ma, enabled: !ma.enabled } : ma
+    );
+    
+    // Prevent disabling all moving averages
+    if (updatedMAs.filter(ma => ma.enabled).length === 0) {
+      alert('Cannot disable all moving averages. Please keep at least one enabled.');
+      return;
     }
+    
+    const updatedConfig = {
+      ...localConfig,
+      movingAverages: updatedMAs
+    };
+    setLocalConfig(updatedConfig);
+    setHasChanges(true);
   };
 
   const handleReset = () => {
-    const defaultConfig = resetDashboardConfig();
-    onConfigChange(defaultConfig);
+    const defaultConfig = getDefaultConfig();
+    setLocalConfig(defaultConfig);
+    setHasChanges(true);
   };
 
   const handleSave = () => {
-    saveDashboardConfig(config);
+    saveDashboardConfig(localConfig);
+    onConfigChange(localConfig);
+    setHasChanges(false);
+    onClose();
+  };
+
+  const handleCancel = () => {
+    setLocalConfig(config);
+    setHasChanges(false);
     onClose();
   };
 
@@ -147,15 +171,17 @@ export default function DashboardConfig({ config, onConfigChange, isOpen, onClos
 
             {/* Ticker list */}
             <div className="max-h-60 overflow-y-auto border border-gray-200 rounded-lg">
-              {config.tickers.map((ticker) => (
+              {localConfig.tickers.map((ticker) => (
                 <div key={ticker} className="flex justify-between items-center p-3 border-b border-gray-100 hover:bg-gray-50">
-                  <span className="font-medium">{ticker}</span>
-                  <button
-                    onClick={() => handleRemoveTicker(ticker)}
-                    className="text-red-600 hover:text-red-800 text-sm"
-                  >
-                    Remove
-                  </button>
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="checkbox"
+                      checked={true}
+                      onChange={() => handleToggleTicker(ticker)}
+                      className="rounded"
+                    />
+                    <span className="font-medium">{ticker}</span>
+                  </div>
                 </div>
               ))}
             </div>
@@ -194,7 +220,7 @@ export default function DashboardConfig({ config, onConfigChange, isOpen, onClos
 
             {/* MA list */}
             <div className="max-h-60 overflow-y-auto border border-gray-200 rounded-lg">
-              {config.movingAverages.map((ma) => (
+              {localConfig.movingAverages.map((ma) => (
                 <div key={ma.key} className="flex justify-between items-center p-3 border-b border-gray-100 hover:bg-gray-50">
                   <div className="flex items-center gap-3">
                     <input
@@ -207,12 +233,6 @@ export default function DashboardConfig({ config, onConfigChange, isOpen, onClos
                       {ma.label}
                     </span>
                   </div>
-                  <button
-                    onClick={() => handleRemoveMA(ma.key)}
-                    className="text-red-600 hover:text-red-800 text-sm"
-                  >
-                    Remove
-                  </button>
                 </div>
               ))}
             </div>
@@ -226,8 +246,11 @@ export default function DashboardConfig({ config, onConfigChange, isOpen, onClos
             <label className="flex items-center gap-2">
               <input
                 type="checkbox"
-                checked={config.showVolatility}
-                onChange={(e) => onConfigChange({ ...config, showVolatility: e.target.checked })}
+                checked={localConfig.showVolatility}
+                onChange={(e) => {
+                  setLocalConfig({ ...localConfig, showVolatility: e.target.checked });
+                  setHasChanges(true);
+                }}
                 className="rounded"
               />
               <span>Show Volatility (ATR, ADR)</span>
@@ -235,8 +258,11 @@ export default function DashboardConfig({ config, onConfigChange, isOpen, onClos
             <label className="flex items-center gap-2">
               <input
                 type="checkbox"
-                checked={config.showRSI}
-                onChange={(e) => onConfigChange({ ...config, showRSI: e.target.checked })}
+                checked={localConfig.showRSI}
+                onChange={(e) => {
+                  setLocalConfig({ ...localConfig, showRSI: e.target.checked });
+                  setHasChanges(true);
+                }}
                 className="rounded"
               />
               <span>Show RSI</span>
@@ -244,8 +270,11 @@ export default function DashboardConfig({ config, onConfigChange, isOpen, onClos
             <label className="flex items-center gap-2">
               <input
                 type="checkbox"
-                checked={config.showVolume}
-                onChange={(e) => onConfigChange({ ...config, showVolume: e.target.checked })}
+                checked={localConfig.showVolume}
+                onChange={(e) => {
+                  setLocalConfig({ ...localConfig, showVolume: e.target.checked });
+                  setHasChanges(true);
+                }}
                 className="rounded"
               />
               <span>Show Volume</span>
@@ -263,16 +292,21 @@ export default function DashboardConfig({ config, onConfigChange, isOpen, onClos
           </button>
           <div className="flex gap-2">
             <button
-              onClick={onClose}
+              onClick={handleCancel}
               className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400"
             >
               Cancel
             </button>
             <button
               onClick={handleSave}
-              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+              disabled={!hasChanges}
+              className={`px-4 py-2 rounded-lg transition-colors ${
+                hasChanges 
+                  ? 'bg-green-600 text-white hover:bg-green-700' 
+                  : 'bg-gray-400 text-gray-200 cursor-not-allowed'
+              }`}
             >
-              Save Configuration
+              {hasChanges ? 'Save Configuration' : 'No Changes'}
             </button>
           </div>
         </div>
