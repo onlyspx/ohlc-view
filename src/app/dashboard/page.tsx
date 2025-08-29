@@ -4,27 +4,8 @@ import { useState, useEffect } from 'react';
 import { useStockData } from '@/hooks/useStockData';
 import { calculateAllIndicators } from '@/lib/technical-indicators';
 import { format } from 'date-fns';
-
-// Define the securities to track
-const SECURITIES = {
-  // Major indices (top priority)
-  majorIndices: [
-    'SPY', 'QQQ'
-  ],
-  // Top 16 SP500 companies by market cap (from Finviz)
-  sp500: [
-    'NVDA', 'MSFT', 'AAPL', 'GOOGL', 'AMZN', 'META', 'AVGO', 'TSLA', 'BRK-B',
-    'JPM', 'WMT', 'V', 'LLY', 'ORCL', 'MA', 'NFLX'
-  ],
-  // Sector ETFs
-  sectors: [
-    'XLK', 'XLF', 'XLV', 'XLI', 'XLE', 'XLP', 'XLY', 'XLB', 'XLU', 'XLRE', 'XLC'
-  ],
-  // Other important indices and commodities
-  others: [
-    'IBIT', 'GLD', 'SMH', 'CL=F', '^VIX', 'IWM', 'DIA'
-  ]
-};
+import { loadDashboardConfig, DashboardConfig } from '@/lib/dashboard-config';
+import DashboardConfigComponent from '@/components/DashboardConfig';
 
 interface SecurityData {
   symbol: string;
@@ -37,9 +18,11 @@ interface SecurityData {
 export default function Dashboard() {
   const [securitiesData, setSecuritiesData] = useState<SecurityData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [config, setConfig] = useState<DashboardConfig>(loadDashboardConfig());
+  const [showConfig, setShowConfig] = useState(false);
 
-  // Combine all securities (major indices first, then others)
-  const allSecurities = [...SECURITIES.majorIndices, ...SECURITIES.sp500, ...SECURITIES.sectors, ...SECURITIES.others];
+  // Use configured tickers
+  const allSecurities = config.tickers;
 
   useEffect(() => {
     const fetchAllData = async () => {
@@ -76,7 +59,7 @@ export default function Dashboard() {
     };
 
     fetchAllData();
-  }, []);
+  }, [config.tickers]);
 
   const getIndicatorValue = (data: any[], indicatorKey: string): number | null => {
     if (!data || data.length === 0) return null;
@@ -183,6 +166,12 @@ export default function Dashboard() {
             >
               📊 SPX Market Profile
             </a>
+            <button
+              onClick={() => setShowConfig(true)}
+              className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-colors"
+            >
+              ⚙️ Configure Dashboard
+            </button>
           </div>
         </div>
 
@@ -193,18 +182,23 @@ export default function Dashboard() {
               <tr>
                 <th className="px-4 py-3 text-left text-sm font-bold text-gray-900 border-b">Symbol</th>
                 <th className="px-4 py-3 text-left text-sm font-bold text-gray-900 border-b">Price</th>
-                <th className="px-4 py-3 text-left text-sm font-bold text-gray-900 border-b">5D SMA</th>
-                <th className="px-4 py-3 text-left text-sm font-bold text-gray-900 border-b">8D EMA</th>
-                <th className="px-4 py-3 text-left text-sm font-bold text-gray-900 border-b">10D SMA</th>
-                <th className="px-4 py-3 text-left text-sm font-bold text-gray-900 border-b">20D SMA</th>
-                <th className="px-4 py-3 text-left text-sm font-bold text-gray-900 border-b">21D EMA</th>
-                <th className="px-4 py-3 text-left text-sm font-bold text-gray-900 border-b">50D SMA</th>
-                <th className="px-4 py-3 text-left text-sm font-bold text-gray-900 border-b">100D SMA</th>
-                <th className="px-4 py-3 text-left text-sm font-bold text-gray-900 border-b">200D SMA</th>
-                <th className="px-4 py-3 text-left text-sm font-bold text-gray-900 border-b">14D ATR</th>
-                <th className="px-4 py-3 text-left text-sm font-bold text-gray-900 border-b">20D ADR</th>
-                <th className="px-4 py-3 text-left text-sm font-bold text-gray-900 border-b">14D RSI</th>
-                <th className="px-4 py-3 text-left text-sm font-bold text-gray-900 border-b">20D Vol</th>
+                {config.movingAverages.filter(ma => ma.enabled).map(ma => (
+                  <th key={ma.key} className="px-4 py-3 text-left text-sm font-bold text-gray-900 border-b">
+                    {ma.label}
+                  </th>
+                ))}
+                {config.showVolatility && (
+                  <>
+                    <th className="px-4 py-3 text-left text-sm font-bold text-gray-900 border-b">14D ATR</th>
+                    <th className="px-4 py-3 text-left text-sm font-bold text-gray-900 border-b">20D ADR</th>
+                  </>
+                )}
+                {config.showRSI && (
+                  <th className="px-4 py-3 text-left text-sm font-bold text-gray-900 border-b">14D RSI</th>
+                )}
+                {config.showVolume && (
+                  <th className="px-4 py-3 text-left text-sm font-bold text-gray-900 border-b">20D Vol</th>
+                )}
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
@@ -223,42 +217,31 @@ export default function Dashboard() {
                         renderPriceCell(security.data)
                       )}
                     </td>
-                    <td className="px-4 py-3 text-sm border-r">
-                      {renderIndicatorCell(getIndicatorValue(security.data, 'sma5'), false, false, false, currentPrice)}
-                    </td>
-                    <td className="px-4 py-3 text-sm border-r">
-                      {renderIndicatorCell(getIndicatorValue(security.data, 'ema8'), false, false, false, currentPrice)}
-                    </td>
-                    <td className="px-4 py-3 text-sm border-r">
-                      {renderIndicatorCell(getIndicatorValue(security.data, 'sma10'), false, false, false, currentPrice)}
-                    </td>
-                    <td className="px-4 py-3 text-sm border-r">
-                      {renderIndicatorCell(getIndicatorValue(security.data, 'sma20'), false, false, false, currentPrice)}
-                    </td>
-                    <td className="px-4 py-3 text-sm border-r">
-                      {renderIndicatorCell(getIndicatorValue(security.data, 'ema21'), false, false, false, currentPrice)}
-                    </td>
-                    <td className="px-4 py-3 text-sm border-r">
-                      {renderIndicatorCell(getIndicatorValue(security.data, 'sma50'), false, false, false, currentPrice)}
-                    </td>
-                    <td className="px-4 py-3 text-sm border-r">
-                      {renderIndicatorCell(getIndicatorValue(security.data, 'sma100'), false, false, false, currentPrice)}
-                    </td>
-                    <td className="px-4 py-3 text-sm border-r">
-                      {renderIndicatorCell(getIndicatorValue(security.data, 'sma200'), false, false, false, currentPrice)}
-                    </td>
-                    <td className="px-4 py-3 text-sm border-r">
-                      {renderIndicatorCell(getIndicatorValue(security.data, 'atr14'), true)}
-                    </td>
-                    <td className="px-4 py-3 text-sm border-r">
-                      {renderIndicatorCell(getIndicatorValue(security.data, 'adr20'), true)}
-                    </td>
-                    <td className="px-4 py-3 text-sm border-r">
-                      {renderIndicatorCell(getIndicatorValue(security.data, 'rsi14'), false, true)}
-                    </td>
-                    <td className="px-4 py-3 text-sm">
-                      {renderIndicatorCell(getIndicatorValue(security.data, 'volumeSMA20'), false, false, true)}
-                    </td>
+                    {config.movingAverages.filter(ma => ma.enabled).map(ma => (
+                      <td key={ma.key} className="px-4 py-3 text-sm border-r">
+                        {renderIndicatorCell(getIndicatorValue(security.data, ma.key), false, false, false, currentPrice)}
+                      </td>
+                    ))}
+                    {config.showVolatility && (
+                      <>
+                        <td className="px-4 py-3 text-sm border-r">
+                          {renderIndicatorCell(getIndicatorValue(security.data, 'atr14'), true)}
+                        </td>
+                        <td className="px-4 py-3 text-sm border-r">
+                          {renderIndicatorCell(getIndicatorValue(security.data, 'adr20'), true)}
+                        </td>
+                      </>
+                    )}
+                    {config.showRSI && (
+                      <td className="px-4 py-3 text-sm border-r">
+                        {renderIndicatorCell(getIndicatorValue(security.data, 'rsi14'), false, true)}
+                      </td>
+                    )}
+                    {config.showVolume && (
+                      <td className="px-4 py-3 text-sm">
+                        {renderIndicatorCell(getIndicatorValue(security.data, 'volumeSMA20'), false, false, true)}
+                      </td>
+                    )}
                   </tr>
                 );
               })}
@@ -314,6 +297,14 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
+
+      {/* Configuration Modal */}
+      <DashboardConfigComponent
+        config={config}
+        onConfigChange={setConfig}
+        isOpen={showConfig}
+        onClose={() => setShowConfig(false)}
+      />
     </main>
   );
 }

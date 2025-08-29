@@ -171,21 +171,23 @@ export function calculatePivotPoints(data: SPXData[]): {
 
 // Calculate all technical indicators for the current data
 export function calculateAllIndicators(data: SPXData[]) {
-  return {
-    sma5: calculateSMA(data, 5),
-    ema8: calculateEMA(data, 8),
-    sma10: calculateSMA(data, 10),
-    sma20: calculateSMA(data, 20),
-    ema21: calculateEMA(data, 21),
-    sma50: calculateSMA(data, 50),
-    sma100: calculateSMA(data, 100),
-    sma200: calculateSMA(data, 200),
+  const indicators: any = {
     atr14: calculateATR(data, 14),
     adr20: calculateADR(data, 20),
     rsi14: calculateRSI(data, 14),
     volumeSMA20: calculateVolumeSMA(data, 20),
     pivotPoints: calculatePivotPoints(data)
   };
+
+  // Add all possible moving averages
+  const periods = [5, 8, 10, 13, 20, 21, 34, 50, 55, 89, 100, 200];
+  
+  periods.forEach(period => {
+    indicators[`sma${period}`] = calculateSMA(data, period);
+    indicators[`ema${period}`] = calculateEMA(data, period);
+  });
+
+  return indicators;
 }
 
 // Gap Analysis Functions
