@@ -18,12 +18,12 @@ export interface DashboardConfig {
 // Default moving averages configuration
 export const DEFAULT_MOVING_AVERAGES: MovingAverage[] = [
   { key: 'sma5', label: '5D SMA', period: 5, type: 'SMA', enabled: true },
-  { key: 'ema8', label: '8D EMA', period: 8, type: 'EMA', enabled: true },
-  { key: 'sma10', label: '10D SMA', period: 10, type: 'SMA', enabled: true },
-  { key: 'sma20', label: '20D SMA', period: 20, type: 'SMA', enabled: true },
+  { key: 'ema8', label: '8D EMA', period: 8, type: 'EMA', enabled: false },
+  { key: 'sma10', label: '10D SMA', period: 10, type: 'SMA', enabled: false },
+  { key: 'sma20', label: '20D SMA', period: 20, type: 'SMA', enabled: false },
   { key: 'ema21', label: '21D EMA', period: 21, type: 'EMA', enabled: true },
-  { key: 'sma50', label: '50D SMA', period: 50, type: 'SMA', enabled: true },
-  { key: 'sma100', label: '100D SMA', period: 100, type: 'SMA', enabled: true },
+  { key: 'sma50', label: '50D SMA', period: 50, type: 'SMA', enabled: false },
+  { key: 'sma100', label: '100D SMA', period: 100, type: 'SMA', enabled: false },
   { key: 'sma200', label: '200D SMA', period: 200, type: 'SMA', enabled: true },
 ];
 
