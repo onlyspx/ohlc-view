@@ -233,9 +233,17 @@ export default function AIStocksPage() {
       else if (currentPrice < value) colorClass = 'text-red-600 font-semibold';
     }
     
-    const formattedValue = isVolatility || isVolume 
-      ? value.toFixed(2) 
-      : value.toFixed(2);
+    let formattedValue: string;
+    
+    if (isVolume) {
+      // Format volume in millions with commas
+      const volumeInMillions = value / 1000000;
+      formattedValue = volumeInMillions.toFixed(1) + 'M';
+    } else if (isVolatility) {
+      formattedValue = value.toFixed(2);
+    } else {
+      formattedValue = value.toFixed(2);
+    }
     
     return <span className={colorClass}>{formattedValue}</span>;
   };
