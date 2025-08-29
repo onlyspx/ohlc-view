@@ -32,13 +32,15 @@ export default function DashboardConfig({ config, onConfigChange, isOpen, onClos
   const [localConfig, setLocalConfig] = useState<DashboardConfig>(config);
   const [hasChanges, setHasChanges] = useState(false);
 
-  if (!isOpen) return null;
-
   // Update local config when prop changes
   useEffect(() => {
-    setLocalConfig(config);
-    setHasChanges(false);
-  }, [config]);
+    if (isOpen) {
+      setLocalConfig(config);
+      setHasChanges(false);
+    }
+  }, [config, isOpen]);
+
+  if (!isOpen) return null;
 
   const handleAddTicker = () => {
     if (newTicker.trim()) {
