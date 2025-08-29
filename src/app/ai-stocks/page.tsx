@@ -10,6 +10,7 @@ interface StockData {
   symbol: string;
   name: string;
   category: string;
+  description: string;
   data: any[];
   indicators: any;
   currentPrice: number;
@@ -19,102 +20,102 @@ interface StockData {
 
 const AI_STOCKS = [
   // Semiconductors
-  { symbol: 'AMD', name: 'AMD', category: 'Semiconductors' },
-  { symbol: 'ASML', name: 'ASML', category: 'Semiconductors' },
-  { symbol: 'AVGO', name: 'Broadcom', category: 'Semiconductors' },
-  { symbol: 'INTC', name: 'Intel', category: 'Semiconductors' },
-  { symbol: 'MRVL', name: 'Marvell', category: 'Semiconductors' },
-  { symbol: 'NVDA', name: 'Nvidia', category: 'Semiconductors' },
-  { symbol: 'TSM', name: 'TSMC', category: 'Semiconductors' },
+  { symbol: 'AMD', name: 'AMD', category: 'Semiconductors', description: 'Leading GPU manufacturer for AI training and inference, competing with NVIDIA in data center AI chips.' },
+  { symbol: 'ASML', name: 'ASML', category: 'Semiconductors', description: 'Monopoly on EUV lithography machines essential for manufacturing advanced AI chips at 3nm and below.' },
+  { symbol: 'AVGO', name: 'Broadcom', category: 'Semiconductors', description: 'Major supplier of networking chips and custom AI accelerators for hyperscale data centers.' },
+  { symbol: 'INTC', name: 'Intel', category: 'Semiconductors', description: 'Developing AI accelerators (Gaudi) and advanced chip manufacturing to compete in AI hardware.' },
+  { symbol: 'MRVL', name: 'Marvell', category: 'Semiconductors', description: 'Specialized in networking chips and custom silicon solutions for AI infrastructure.' },
+  { symbol: 'NVDA', name: 'Nvidia', category: 'Semiconductors', description: 'Dominant leader in AI GPUs and data center chips, powering most AI training and inference.' },
+  { symbol: 'TSM', name: 'TSMC', category: 'Semiconductors', description: 'World\'s largest chip manufacturer, producing AI chips for NVIDIA, AMD, and other AI companies.' },
   
   // Cloud Service Providers
-  { symbol: 'AMZN', name: 'Amazon', category: 'Cloud Providers' },
-  { symbol: 'GOOGL', name: 'Alphabet', category: 'Cloud Providers' },
-  { symbol: 'IBM', name: 'IBM', category: 'Cloud Providers' },
-  { symbol: 'MSFT', name: 'Microsoft', category: 'Cloud Providers' },
-  { symbol: 'NOW', name: 'ServiceNow', category: 'Cloud Providers' },
-  { symbol: 'ORCL', name: 'Oracle', category: 'Cloud Providers' },
+  { symbol: 'AMZN', name: 'Amazon', category: 'Cloud Providers', description: 'AWS provides AI/ML services, Bedrock for generative AI, and infrastructure for AI training.' },
+  { symbol: 'GOOGL', name: 'Alphabet', category: 'Cloud Providers', description: 'Google Cloud AI services, Gemini models, and TPU chips for AI training and inference.' },
+  { symbol: 'IBM', name: 'IBM', category: 'Cloud Providers', description: 'Watson AI platform, enterprise AI solutions, and quantum computing for AI research.' },
+  { symbol: 'MSFT', name: 'Microsoft', category: 'Cloud Providers', description: 'Azure AI services, OpenAI partnership, and Copilot AI integration across products.' },
+  { symbol: 'NOW', name: 'ServiceNow', category: 'Cloud Providers', description: 'AI-powered workflow automation and enterprise service management solutions.' },
+  { symbol: 'ORCL', name: 'Oracle', category: 'Cloud Providers', description: 'Oracle Cloud AI services and enterprise AI applications for business automation.' },
   
   // Servers
-  { symbol: 'DELL', name: 'Dell', category: 'Servers' },
-  { symbol: 'HPE', name: 'HPE', category: 'Servers' },
-  { symbol: 'SMCI', name: 'Super Micro', category: 'Servers' },
-  { symbol: 'VRT', name: 'Vertiv', category: 'Servers' },
+  { symbol: 'DELL', name: 'Dell', category: 'Servers', description: 'AI-optimized servers and workstations for machine learning and data center deployments.' },
+  { symbol: 'HPE', name: 'HPE', category: 'Servers', description: 'High-performance computing servers and AI infrastructure solutions for enterprise.' },
+  { symbol: 'SMCI', name: 'Super Micro', category: 'Servers', description: 'Leading supplier of AI server racks and GPU-optimized systems for data centers.' },
+  { symbol: 'VRT', name: 'Vertiv', category: 'Servers', description: 'Critical infrastructure and cooling systems for AI data centers and high-density computing.' },
   
   // Storage
-  { symbol: 'MU', name: 'Micron', category: 'Storage' },
-  { symbol: 'STX', name: 'Seagate', category: 'Storage' },
-  { symbol: 'WDC', name: 'Western Digital', category: 'Storage' },
+  { symbol: 'MU', name: 'Micron', category: 'Storage', description: 'High-performance memory chips (HBM) and storage solutions for AI training and inference.' },
+  { symbol: 'STX', name: 'Seagate', category: 'Storage', description: 'Enterprise storage solutions and data management for AI workloads and big data.' },
+  { symbol: 'WDC', name: 'Western Digital', category: 'Storage', description: 'Advanced storage technologies for AI data centers and machine learning applications.' },
   
   // Electronics
-  { symbol: 'AMSC', name: 'American Superconductor', category: 'Electronics' },
-  { symbol: 'APH', name: 'Amphenol', category: 'Electronics' },
-  { symbol: 'ETN', name: 'Eaton', category: 'Electronics' },
-  { symbol: 'NVT', name: 'nVent', category: 'Electronics' },
+  { symbol: 'AMSC', name: 'American Superconductor', category: 'Electronics', description: 'Superconducting materials and power systems for high-efficiency AI data center infrastructure.' },
+  { symbol: 'APH', name: 'Amphenol', category: 'Electronics', description: 'High-speed connectors and interconnect solutions for AI servers and networking equipment.' },
+  { symbol: 'ETN', name: 'Eaton', category: 'Electronics', description: 'Power management and electrical infrastructure for AI data centers and computing facilities.' },
+  { symbol: 'NVT', name: 'nVent', category: 'Electronics', description: 'Thermal management and electrical protection systems for AI computing infrastructure.' },
   
   // Networking
-  { symbol: 'ALAB', name: 'Astera Labs', category: 'Networking' },
-  { symbol: 'ANET', name: 'Arista Networks', category: 'Networking' },
-  { symbol: 'CIEN', name: 'Ciena', category: 'Networking' },
-  { symbol: 'CLS', name: 'Celestica', category: 'Networking' },
-  { symbol: 'COHR', name: 'Coherent', category: 'Networking' },
-  { symbol: 'CRDO', name: 'Credo Technology', category: 'Networking' },
-  { symbol: 'CSCO', name: 'Cisco Systems', category: 'Networking' },
-  { symbol: 'EXTR', name: 'Extreme Networks', category: 'Networking' },
-  { symbol: 'FFIV', name: 'F5 Networks', category: 'Networking' },
-  { symbol: 'JNPR', name: 'Juniper Networks', category: 'Networking' },
+  { symbol: 'ALAB', name: 'Astera Labs', category: 'Networking', description: 'High-speed interconnect chips for AI data centers and GPU-to-GPU communication.' },
+  { symbol: 'ANET', name: 'Arista Networks', category: 'Networking', description: 'High-performance networking switches for AI data centers and cloud infrastructure.' },
+  { symbol: 'CIEN', name: 'Ciena', category: 'Networking', description: 'Optical networking solutions for high-bandwidth AI data transmission and cloud connectivity.' },
+  { symbol: 'CLS', name: 'Celestica', category: 'Networking', description: 'Electronics manufacturing services for AI networking equipment and data center hardware.' },
+  { symbol: 'COHR', name: 'Coherent', category: 'Networking', description: 'Optical components and lasers for high-speed data transmission in AI networks.' },
+  { symbol: 'CRDO', name: 'Credo Technology', category: 'Networking', description: 'High-speed connectivity solutions for AI data centers and networking infrastructure.' },
+  { symbol: 'CSCO', name: 'Cisco Systems', category: 'Networking', description: 'Enterprise networking equipment and AI-powered network management solutions.' },
+  { symbol: 'EXTR', name: 'Extreme Networks', category: 'Networking', description: 'AI-driven network analytics and enterprise networking solutions.' },
+  { symbol: 'FFIV', name: 'F5 Networks', category: 'Networking', description: 'Application delivery and security solutions for AI applications and cloud services.' },
+  { symbol: 'JNPR', name: 'Juniper Networks', category: 'Networking', description: 'AI-powered networking solutions and cloud infrastructure for data centers.' },
   
   // Cloud and Data Services
-  { symbol: 'CFLT', name: 'Confluent', category: 'Cloud Services' },
-  { symbol: 'DDOG', name: 'Datadog', category: 'Cloud Services' },
-  { symbol: 'DOCN', name: 'DigitalOcean', category: 'Cloud Services' },
-  { symbol: 'ESTC', name: 'Elastic', category: 'Cloud Services' },
-  { symbol: 'GTLB', name: 'GitLab', category: 'Cloud Services' },
-  { symbol: 'INOD', name: 'Innodata', category: 'Cloud Services' },
-  { symbol: 'MDB', name: 'MongoDB', category: 'Cloud Services' },
-  { symbol: 'PLTR', name: 'Palantir', category: 'Cloud Services' },
-  { symbol: 'SNOW', name: 'Snowflake', category: 'Cloud Services' },
+  { symbol: 'CFLT', name: 'Confluent', category: 'Cloud Services', description: 'Real-time data streaming platform for AI applications and machine learning pipelines.' },
+  { symbol: 'DDOG', name: 'Datadog', category: 'Cloud Services', description: 'AI-powered monitoring and analytics for cloud infrastructure and applications.' },
+  { symbol: 'DOCN', name: 'DigitalOcean', category: 'Cloud Services', description: 'Cloud infrastructure and developer tools for AI application deployment and scaling.' },
+  { symbol: 'ESTC', name: 'Elastic', category: 'Cloud Services', description: 'Search and analytics platform with AI capabilities for data discovery and insights.' },
+  { symbol: 'GTLB', name: 'GitLab', category: 'Cloud Services', description: 'DevOps platform with AI-powered code analysis and development automation tools.' },
+  { symbol: 'INOD', name: 'Innodata', category: 'Cloud Services', description: 'AI data preparation and training services for machine learning model development.' },
+  { symbol: 'MDB', name: 'MongoDB', category: 'Cloud Services', description: 'NoSQL database platform supporting AI applications and real-time data processing.' },
+  { symbol: 'PLTR', name: 'Palantir', category: 'Cloud Services', description: 'AI-powered data analytics platform for enterprise decision-making and intelligence.' },
+  { symbol: 'SNOW', name: 'Snowflake', category: 'Cloud Services', description: 'Cloud data platform for AI/ML workloads and large-scale data analytics.' },
   
   // Data Centers
-  { symbol: 'AMT', name: 'American Tower', category: 'Data Centers' },
-  { symbol: 'APLD', name: 'Applied Digital', category: 'Data Centers' },
-  { symbol: 'CORZ', name: 'Core Scientific', category: 'Data Centers' },
-  { symbol: 'CRWV', name: 'Coreweave', category: 'Data Centers' },
-  { symbol: 'EQIX', name: 'Equinix', category: 'Data Centers' },
-  { symbol: 'GDS', name: 'GDS Holdings', category: 'Data Centers' },
-  { symbol: 'GLXY', name: 'Galaxy Digital', category: 'Data Centers' },
-  { symbol: 'IREN', name: 'Iris Energy', category: 'Data Centers' },
-  { symbol: 'NBIS', name: 'Nebius', category: 'Data Centers' },
-  { symbol: 'VNET', name: 'VNET Group', category: 'Data Centers' },
+  { symbol: 'AMT', name: 'American Tower', category: 'Data Centers', description: 'Telecommunications infrastructure supporting AI data transmission and edge computing.' },
+  { symbol: 'APLD', name: 'Applied Digital', category: 'Data Centers', description: 'Specialized data centers for AI computing and cryptocurrency mining infrastructure.' },
+  { symbol: 'CORZ', name: 'Core Scientific', category: 'Data Centers', description: 'AI computing infrastructure and data center services for machine learning workloads.' },
+  { symbol: 'CRWV', name: 'Coreweave', category: 'Data Centers', description: 'Cloud computing platform specializing in AI and machine learning infrastructure.' },
+  { symbol: 'EQIX', name: 'Equinix', category: 'Data Centers', description: 'Global data center operator providing infrastructure for AI applications and cloud services.' },
+  { symbol: 'GDS', name: 'GDS Holdings', category: 'Data Centers', description: 'Data center services in China supporting AI and cloud computing infrastructure.' },
+  { symbol: 'GLXY', name: 'Galaxy Digital', category: 'Data Centers', description: 'Digital asset infrastructure including AI computing and blockchain technology.' },
+  { symbol: 'IREN', name: 'Iris Energy', category: 'Data Centers', description: 'Renewable energy-powered data centers for sustainable AI computing infrastructure.' },
+  { symbol: 'NBIS', name: 'Nebius', category: 'Data Centers', description: 'Cloud computing platform with AI services and data center infrastructure.' },
+  { symbol: 'VNET', name: 'VNET Group', category: 'Data Centers', description: 'Data center services in China supporting AI and enterprise cloud solutions.' },
   
   // Nuclear Energy
-  { symbol: 'BWXT', name: 'BWX Tech', category: 'Nuclear Energy' },
-  { symbol: 'NNE', name: 'Nano Nuclear', category: 'Nuclear Energy' },
-  { symbol: 'OKLO', name: 'Oklo', category: 'Nuclear Energy' },
-  { symbol: 'RYCEF', name: 'Rolls Royce', category: 'Nuclear Energy' },
-  { symbol: 'SMR', name: 'NuScale', category: 'Nuclear Energy' },
+  { symbol: 'BWXT', name: 'BWX Tech', category: 'Nuclear Energy', description: 'Nuclear technology for clean energy to power AI data centers and computing infrastructure.' },
+  { symbol: 'NNE', name: 'Nano Nuclear', category: 'Nuclear Energy', description: 'Advanced nuclear reactors for sustainable energy to support AI computing demands.' },
+  { symbol: 'OKLO', name: 'Oklo', category: 'Nuclear Energy', description: 'Micro-reactor technology for clean, reliable power for AI data centers and edge computing.' },
+  { symbol: 'RYCEF', name: 'Rolls Royce', category: 'Nuclear Energy', description: 'Small modular reactors for sustainable energy solutions to power AI infrastructure.' },
+  { symbol: 'SMR', name: 'NuScale', category: 'Nuclear Energy', description: 'Small modular nuclear reactors for clean energy to support AI computing and data centers.' },
   
   // Data
-  { symbol: 'META', name: 'Meta', category: 'Data' },
-  { symbol: 'RDDT', name: 'Reddit', category: 'Data' },
+  { symbol: 'META', name: 'Meta', category: 'Data', description: 'AI research and development, large language models, and AI-powered social media algorithms.' },
+  { symbol: 'RDDT', name: 'Reddit', category: 'Data', description: 'AI-powered content moderation, recommendation algorithms, and data for AI training.' },
   
   // Energy and Utilities
-  { symbol: 'CEG', name: 'Constellation Energy', category: 'Energy' },
-  { symbol: 'D', name: 'Dominion Energy', category: 'Energy' },
-  { symbol: 'DUK', name: 'Duke Energy', category: 'Energy' },
-  { symbol: 'ETR', name: 'Entergy', category: 'Energy' },
-  { symbol: 'GEV', name: 'GE Vernova', category: 'Energy' },
-  { symbol: 'NEE', name: 'NextEra Energy', category: 'Energy' },
-  { symbol: 'PEG', name: 'PSEG', category: 'Energy' },
-  { symbol: 'PNW', name: 'Pinnacle West', category: 'Energy' },
-  { symbol: 'SO', name: 'Southern Company', category: 'Energy' },
-  { symbol: 'SRE', name: 'Sempra Energy', category: 'Energy' },
-  { symbol: 'VST', name: 'Vistra', category: 'Energy' },
-  { symbol: 'TLN', name: 'Energy', category: 'Energy' },
-  { symbol: 'WEC', name: 'WEC Energy Group', category: 'Energy' },
+  { symbol: 'CEG', name: 'Constellation Energy', category: 'Energy', description: 'Clean energy solutions to power AI data centers and sustainable computing infrastructure.' },
+  { symbol: 'D', name: 'Dominion Energy', category: 'Energy', description: 'Energy infrastructure supporting AI data centers and high-performance computing facilities.' },
+  { symbol: 'DUK', name: 'Duke Energy', category: 'Energy', description: 'Renewable energy and grid infrastructure for AI computing and data center operations.' },
+  { symbol: 'ETR', name: 'Entergy', category: 'Energy', description: 'Energy solutions for AI data centers and industrial computing infrastructure.' },
+  { symbol: 'GEV', name: 'GE Vernova', category: 'Energy', description: 'Clean energy technology and grid solutions for sustainable AI computing infrastructure.' },
+  { symbol: 'NEE', name: 'NextEra Energy', category: 'Energy', description: 'Renewable energy leader providing clean power for AI data centers and computing facilities.' },
+  { symbol: 'PEG', name: 'PSEG', category: 'Energy', description: 'Energy infrastructure and clean power solutions for AI computing and data center operations.' },
+  { symbol: 'PNW', name: 'Pinnacle West', category: 'Energy', description: 'Energy services supporting AI data centers and high-performance computing infrastructure.' },
+  { symbol: 'SO', name: 'Southern Company', category: 'Energy', description: 'Energy infrastructure and clean power solutions for AI computing and data centers.' },
+  { symbol: 'SRE', name: 'Sempra Energy', category: 'Energy', description: 'Energy infrastructure and renewable power for AI data centers and computing facilities.' },
+  { symbol: 'VST', name: 'Vistra', category: 'Energy', description: 'Energy generation and retail services supporting AI computing and data center operations.' },
+  { symbol: 'TLN', name: 'Energy', category: 'Energy', description: 'Energy infrastructure and power solutions for AI computing and data center facilities.' },
+  { symbol: 'WEC', name: 'WEC Energy Group', category: 'Energy', description: 'Energy services and infrastructure supporting AI data centers and computing operations.' },
   
   // Engineering and Construction
-  { symbol: 'PWR', name: 'Quanta', category: 'Engineering' }
+  { symbol: 'PWR', name: 'Quanta', category: 'Engineering', description: 'Infrastructure construction and engineering services for AI data centers and power facilities.' }
 ];
 
 const CATEGORY_EMOJIS: { [key: string]: string } = {
@@ -162,6 +163,7 @@ export default function AIStocksPage() {
               symbol: stock.symbol,
               name: stock.name,
               category: stock.category,
+              description: stock.description,
               data: [],
               indicators: {},
               currentPrice: 0,
@@ -178,6 +180,7 @@ export default function AIStocksPage() {
             symbol: stock.symbol,
             name: stock.name,
             category: stock.category,
+            description: stock.description,
             data,
             indicators,
             currentPrice,
@@ -190,6 +193,7 @@ export default function AIStocksPage() {
             symbol: stock.symbol,
             name: stock.name,
             category: stock.category,
+            description: stock.description,
             data: [],
             indicators: {},
             currentPrice: 0,
@@ -327,7 +331,16 @@ export default function AIStocksPage() {
                   <tr key={stock.symbol} className="hover:bg-gray-50">
                     <td className="px-4 py-3 text-sm border-r">
                       <div>
-                        <div className="font-semibold text-gray-900">{stock.symbol}</div>
+                        <div className="flex items-center gap-2">
+                          <div className="font-semibold text-gray-900">{stock.symbol}</div>
+                          <button
+                            onClick={() => alert(stock.description)}
+                            className="text-blue-500 hover:text-blue-700 text-xs"
+                            title="Click for AI relevance info"
+                          >
+                            ℹ️
+                          </button>
+                        </div>
                         <div className="text-xs text-gray-500">{stock.name}</div>
                       </div>
                     </td>
