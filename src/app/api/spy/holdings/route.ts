@@ -47,8 +47,11 @@ const getStockData = async (ticker: string): Promise<{
     // Map ticker to Yahoo Finance format
     const yahooTicker = mapTickerToYahoo(ticker);
     
-    // Use your existing Yahoo Finance API
-    const response = await fetch(`http://localhost:3000/api/stock/${yahooTicker}`);
+    // Use your existing Yahoo Finance API - construct URL dynamically for Vercel
+    const baseUrl = process.env.VERCEL_URL 
+      ? `https://${process.env.VERCEL_URL}` 
+      : 'http://localhost:3000';
+    const response = await fetch(`${baseUrl}/api/stock/${yahooTicker}`);
     if (!response.ok) {
       console.error(`Failed to fetch data for ${ticker}: HTTP ${response.status}`);
       return null;
