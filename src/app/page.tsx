@@ -35,7 +35,7 @@ export default function Home() {
           </p>
           
           {/* Navigation */}
-          <div className="mb-6 flex gap-4">
+          <div className="mb-6 flex gap-4 flex-wrap">
                     <a
           href="/dashboard"
           className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-colors"
@@ -53,6 +53,12 @@ export default function Home() {
               className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors"
             >
               📊 SPX Market Profile
+            </a>
+            <a
+              href="/spy-simulator"
+              className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-colors"
+            >
+              🎯 SPY What-If Simulator
             </a>
           </div>
           
