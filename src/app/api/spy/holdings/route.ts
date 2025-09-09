@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import * as XLSX from 'xlsx';
 import fs from 'fs';
 import path from 'path';
+import { fetchStockData } from '@/lib/yahoo-finance';
 
 interface SPYHolding {
   ticker: string;
@@ -47,24 +48,15 @@ const getStockData = async (ticker: string): Promise<{
     // Map ticker to Yahoo Finance format
     const yahooTicker = mapTickerToYahoo(ticker);
     
-    // Use your existing Yahoo Finance API - construct URL dynamically for Vercel
-    const baseUrl = process.env.VERCEL_URL 
-      ? `https://${process.env.VERCEL_URL}` 
-      : 'http://localhost:3000';
-    const response = await fetch(`${baseUrl}/api/stock/${yahooTicker}`);
-    if (!response.ok) {
-      console.error(`Failed to fetch data for ${ticker}: HTTP ${response.status}`);
-      return null;
-    }
+    // Use the direct Yahoo Finance API function instead of HTTP calls
+    const stockData = await fetchStockData(yahooTicker);
     
-    const responseData = await response.json();
-    
-    if (!responseData || !responseData.data || responseData.data.length === 0) {
+    if (!stockData || stockData.length === 0) {
       console.error(`No data available for ${ticker}`);
       return null;
     }
     
-    const latestData = responseData.data[0];
+    const latestData = stockData[0];
     
     if (!latestData || !latestData.date) {
       console.error(`Invalid data structure for ${ticker}:`, latestData);
@@ -73,7 +65,7 @@ const getStockData = async (ticker: string): Promise<{
     
     // Calculate YTD high and low from all available data
     const currentYear = new Date().getFullYear();
-    const ytdData = responseData.data.filter((item: any) => {
+    const ytdData = stockData.filter((item: any) => {
       const itemYear = new Date(item.date).getFullYear();
       return itemYear === currentYear;
     });
