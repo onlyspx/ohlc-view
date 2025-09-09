@@ -219,53 +219,53 @@ export default function SPYSimulator() {
           </div>
         </div>
 
-        {/* SPY Overview Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">Current Price</CardTitle>
+        {/* SPY Overview Card */}
+        <div className="mb-8">
+          <Card className="bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
+            <CardHeader className="pb-4">
+              <CardTitle className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                <span className="text-2xl">📈</span>
+                SPY Overview
+              </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">${formatPrice(spyData.currentPrice)}</div>
-              <div className="text-xs mt-2 space-y-1">
-                <div className="text-green-600">
-                  {formatPercent(((spyData.week52High - spyData.currentPrice) / spyData.currentPrice) * 100)} to YTD High
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {/* Current Price */}
+                <div className="text-center">
+                  <div className="text-sm font-medium text-gray-600 mb-1">Current Price</div>
+                  <div className="text-2xl font-bold text-gray-900">${formatPrice(spyData.currentPrice)}</div>
+                  <div className="text-xs mt-2 space-y-1">
+                    <div className="text-green-600">
+                      {formatPercent(((spyData.week52High - spyData.currentPrice) / spyData.currentPrice) * 100)} to YTD High
+                    </div>
+                    <div className="text-red-600">
+                      {formatPercent(((spyData.week52Low - spyData.currentPrice) / spyData.currentPrice) * 100)} to YTD Low
+                    </div>
+                  </div>
                 </div>
-                <div className="text-red-600">
-                  {formatPercent(((spyData.week52Low - spyData.currentPrice) / spyData.currentPrice) * 100)} to YTD Low
+
+                {/* YTD High */}
+                <div className="text-center">
+                  <div className="text-sm font-medium text-gray-600 mb-1">YTD High</div>
+                  <div className="text-2xl font-bold text-green-600">${formatPrice(spyData.week52High)}</div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">YTD High</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-green-600">${formatPrice(spyData.week52High)}</div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">YTD Low</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-red-600">${formatPrice(spyData.week52Low)}</div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-gray-600">Simulated Price</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                ${formatPrice(calculatedSPYPrice)}
-              </div>
-              <div className={`text-sm ${priceChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                {formatPercent(priceChangePercent)} ({formatPrice(priceChange)})
+
+                {/* YTD Low */}
+                <div className="text-center">
+                  <div className="text-sm font-medium text-gray-600 mb-1">YTD Low</div>
+                  <div className="text-2xl font-bold text-red-600">${formatPrice(spyData.week52Low)}</div>
+                </div>
+
+                {/* Simulated Price */}
+                <div className="text-center">
+                  <div className="text-sm font-medium text-gray-600 mb-1">Simulated Price</div>
+                  <div className="text-2xl font-bold text-blue-600">
+                    ${formatPrice(calculatedSPYPrice)}
+                  </div>
+                  <div className={`text-sm font-medium ${priceChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                    {formatPercent(priceChangePercent)} ({formatPrice(priceChange)})
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -297,10 +297,10 @@ export default function SPYSimulator() {
         <div className="mb-6 flex justify-between items-center">
           <div>
             <h2 className="text-xl font-semibold text-gray-900">
-              Top {holdingsCount === 'all' ? 'All' : holdingsCount} Holdings with Real Data ({spyData.holdings.length})
+              Top {holdingsCount === 'all' ? 'All' : holdingsCount} Holdings
             </h2>
             <p className="text-sm text-gray-600 mt-1">
-              Representing {spyData.totalWeight.toFixed(1)}% of SPY index
+              {spyData.totalWeight.toFixed(1)}% of SPY index • {spyData.holdings.length} companies
             </p>
           </div>
           <div className="flex items-center gap-3">
