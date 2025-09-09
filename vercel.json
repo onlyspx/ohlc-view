@@ -14,6 +14,9 @@
     },
     "src/app/api/spx/refresh/route.ts": {
       "maxDuration": 30
+    },
+    "src/app/api/spy/holdings/route.ts": {
+      "maxDuration": 30
     }
   },
   "headers": [
