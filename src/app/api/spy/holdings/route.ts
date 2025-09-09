@@ -137,9 +137,9 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Header row not found' }, { status: 400 });
     }
 
-    const holdings: SPYHolding[] = [];
+    // First, collect all tickers to fetch
+    const tickersToFetch: Array<{ticker: string, weight: number, name: string}> = [];
     
-    // Parse only top 30 holdings to avoid API errors
     for (let i = headerRowIndex + 1; i < Math.min(headerRowIndex + maxHoldings + 1, data.length); i++) {
       const row = data[i] as any[];
       
@@ -151,9 +151,21 @@ export async function GET(request: Request) {
       
       if (!ticker || isNaN(weight) || weight <= 0) continue;
       
-      // Get real stock data - only include if we have real data
+      tickersToFetch.push({ ticker, weight, name });
+    }
+
+    // Fetch all stock data in parallel for much better performance
+    console.log(`Fetching data for ${tickersToFetch.length} stocks in parallel...`);
+    const stockDataPromises = tickersToFetch.map(async ({ ticker, weight, name }) => {
       const stockData = await getStockData(ticker);
-      
+      return { ticker, weight, name, stockData };
+    });
+
+    const stockResults = await Promise.all(stockDataPromises);
+    
+    // Filter and build holdings array
+    const holdings: SPYHolding[] = [];
+    for (const { ticker, weight, name, stockData } of stockResults) {
       if (stockData) {
         holdings.push({
           ticker,
@@ -194,7 +206,13 @@ export async function GET(request: Request) {
       totalWeight: totalWeight
     };
 
-    return NextResponse.json(spyData);
+    return NextResponse.json(spyData, {
+      headers: {
+        'Cache-Control': 'public, max-age=300, s-maxage=300', // Cache for 5 minutes
+        'CDN-Cache-Control': 'max-age=300',
+        'Vercel-CDN-Cache-Control': 'max-age=300'
+      }
+    });
     
   } catch (error) {
     console.error('Error:', error);

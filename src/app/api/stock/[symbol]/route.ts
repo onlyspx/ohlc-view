@@ -24,9 +24,9 @@ export async function GET(
 
     return NextResponse.json(responseData, {
       headers: {
-        'Cache-Control': 'no-cache, no-store, must-revalidate',
-        'Pragma': 'no-cache',
-        'Expires': '0'
+        'Cache-Control': 'public, max-age=60, s-maxage=60', // Cache for 1 minute
+        'CDN-Cache-Control': 'max-age=60',
+        'Vercel-CDN-Cache-Control': 'max-age=60'
       }
     });
   } catch (error) {
