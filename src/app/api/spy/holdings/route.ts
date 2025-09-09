@@ -128,7 +128,7 @@ export async function GET(request: Request) {
     // Find header row - look for the row with "Name", "Ticker", "Weight" headers
     let headerRowIndex = -1;
     for (let i = 0; i < data.length; i++) {
-      const row = data[i];
+      const row = data[i] as any[];
       if (row && row.length >= 5 && 
           row[0] === 'Name' && 
           row[1] === 'Ticker' && 
@@ -146,7 +146,7 @@ export async function GET(request: Request) {
     
     // Parse only top 30 holdings to avoid API errors
     for (let i = headerRowIndex + 1; i < Math.min(headerRowIndex + maxHoldings + 1, data.length); i++) {
-      const row = data[i];
+      const row = data[i] as any[];
       
       if (!row || row.length === 0) continue;
       
@@ -203,6 +203,6 @@ export async function GET(request: Request) {
     
   } catch (error) {
     console.error('Error:', error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: error instanceof Error ? error.message : 'Unknown error' }, { status: 500 });
   }
 }

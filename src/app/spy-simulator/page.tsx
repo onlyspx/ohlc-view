@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Slider } from '@/components/ui/slider';
 import { Badge } from '@/components/ui/badge';
@@ -40,19 +40,7 @@ export default function SPYSimulator() {
   const [error, setError] = useState<string | null>(null);
   const [holdingsCount, setHoldingsCount] = useState<string>('30');
 
-  // Load SPY data and holdings
-  useEffect(() => {
-    loadSPYData();
-  }, [holdingsCount]);
-
-  // Calculate new SPY price when adjustments change
-  useEffect(() => {
-    if (spyData) {
-      calculateNewSPYPrice();
-    }
-  }, [stockAdjustments, spyData]);
-
-  const loadSPYData = async () => {
+  const loadSPYData = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
@@ -80,9 +68,9 @@ export default function SPYSimulator() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [holdingsCount]);
 
-  const calculateNewSPYPrice = () => {
+  const calculateNewSPYPrice = useCallback(() => {
     if (!spyData) return;
 
     let totalWeightedChange = 0;
@@ -101,7 +89,19 @@ export default function SPYSimulator() {
     setCalculatedSPYPrice(newPrice);
     setPriceChange(change);
     setPriceChangePercent(changePercent);
-  };
+  }, [spyData, stockAdjustments]);
+
+  // Load SPY data and holdings
+  useEffect(() => {
+    loadSPYData();
+  }, [loadSPYData]);
+
+  // Calculate new SPY price when adjustments change
+  useEffect(() => {
+    if (spyData) {
+      calculateNewSPYPrice();
+    }
+  }, [calculateNewSPYPrice, spyData]);
 
   const handleStockAdjustment = (ticker: string, value: number[]) => {
     setStockAdjustments(prev => ({
@@ -209,7 +209,7 @@ export default function SPYSimulator() {
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">SPY What-If Simulator</h1>
           <p className="text-gray-600">
-            Simulate how individual stock movements would impact SPY's price
+            Simulate how individual stock movements would impact SPY&apos;s price
           </p>
           <div className="mt-2 text-sm text-gray-500">
             Holdings last updated: {new Date(spyData.lastUpdated).toLocaleDateString()}
